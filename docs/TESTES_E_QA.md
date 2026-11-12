@@ -1,7 +1,7 @@
 # Testes e QA
 
 ## Automatizados
-- `npm ci`
+- `npm install`
 - `npm run typecheck`
 - `npm test`
 - `npm run build`
@@ -29,4 +29,4 @@ Cobertura inicial: contagem e campos do catálogo; IDs únicos e divisão 24/22;
 
 ## Limitação de execução local
 
-A instalação de dependências npm foi tentada, mas o ambiente de execução não conseguiu acessar `registry.npmjs.org` (sem cache local). Por isso `npm ci`, Vitest e build Vite não foram executados aqui; não há `package-lock.json` gerado. O workflow Pages está preparado, mas precisa de lockfile gerado por `npm install` em ambiente com acesso ao npm antes de ser considerado validado.
+A instalação de dependências npm foi tentada, mas o ambiente de execução não conseguiu acessar `registry.npmjs.org` (sem cache local). Por isso `npm install`, Vitest e build Vite não foram executados aqui; não há `package-lock.json` gerado. O GitHub Actions pode instalar dependências em ambiente de rede e gerar um artefato ZIP do build para revisão sem publicação; nenhum Pages é ativado automaticamente.

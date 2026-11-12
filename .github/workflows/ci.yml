@@ -18,3 +18,9 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Guardar build para revisão privada (sem publicar)
+        uses: actions/upload-artifact@v4
+        with:
+          name: universo-if-avalia-primeiro-frontend
+          path: dist
+          retention-days: 14
