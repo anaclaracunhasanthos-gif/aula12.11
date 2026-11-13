@@ -18,15 +18,56 @@ function doPost(e) { // endpoint técnico; interface recomendada usa google.scri
 }
 function renderPage_(file,title,projectId){const t=HtmlService.createTemplateFromFile(file);t.title=title;t.projectId=projectId||'';return t.evaluate().setTitle(title).addMetaTag('viewport','width=device-width, initial-scale=1');}
 function include_(name){return HtmlService.createHtmlOutputFromFile(name).getContent();}
-function setupPlanilha_(){
+
+function setupPlanilha_() {
+ // Seguro para reexecução: nunca limpe abas que já contenham avaliações ou códigos.
  const ss=SpreadsheetApp.openById(prop_('SPREADSHEET_ID'));
- const defs={Projetos:['id','titulo','modalidade','area_tematica','data','inicio','fim','formato','local'],Codigos:['hash_codigo','habilitado','criado_em'],Avaliacoes:['id_requisicao','hash_codigo','id_projeto','criatividade','clareza','relevancia','demonstracao','nota_ponderada','timestamp','estado'],Configuracao:['chave','valor']};
- Object.keys(defs).forEach(n=>{let sh=ss.getSheetByName(n)||ss.insertSheet(n);sh.clear();sh.getRange(1,1,1,defs[n].length).setValues([defs[n]]);sh.setFrozenRows(1);});
- const catalog=JSON.parse(UrlFetchApp.fetch(prop_('CATALOGO_JSON_URL')).getContentText());
- const rows=catalog.projetos.map(p=>[p.id,p.titulo,p.modalidade,p.area_tematica,p.data,p.inicio,p.fim,p.formato,p.local]);
- ss.getSheetByName(SHEETS.projetos).getRange(2,1,rows.length,rows[0].length).setValues(rows);
- ss.getSheetByName(SHEETS.config).getRange(2,1,5,2).setValues([['votacao_aberta','false'],['inicio',''],['fim',''],['catalogo_versao','1.0'],['minimo_ranking','5']]);
- return 'Planilha inicializada: 46 projetos.';
+ const defs={
+  Projetos:['id','titulo','modalidade','area_tematica','data','inicio','fim','formato','local'],
+  Codigos:['hash_codigo','habilitado','criado_em'],
+  Avaliacoes:['id_requisicao','hash_codigo','id_projeto','criatividade','clareza','relevancia','demonstracao','nota_ponderada','timestamp','estado'],
+  Configuracao:['chave','valor']
+ };
+ Object.keys(defs).forEach(n=>{
+  let sh=ss.getSheetByName(n);
+  if(!sh) sh=ss.insertSheet(n);
+  const header=sh.getRange(1,1,1,defs[n].length).getValues()[0];
+  if(header.every(v=>!v)) sh.getRange(1,1,1,defs[n].length).setValues([defs[n]]);
+  else if(defs[n].some((value,i)=>header[i]!==value)) throw new Error('Cabeçalhos inesperados na aba '+n+'. Não alterei dados.');
+  sh.setFrozenRows(1);
+ });
+ const config=ss.getSheetByName(SHEETS.config);
+ if(config.getLastRow()===1)config.getRange(2,1,5,2).setValues([['votacao_aberta','false'],['inicio',''],['fim',''],['catalogo_versao','1.0'],['minimo_ranking','5']]);
+ const projetos=ss.getSheetByName(SHEETS.projetos);
+ if(projetos.getLastRow()===1){
+  const url=prop_('CATALOGO_JSON_URL');
+  const catalog=JSON.parse(UrlFetchApp.fetch(url).getContentText());
+  if(!catalog.projetos||catalog.projetos.length!==46||new Set(catalog.projetos.map(p=>p.id)).size!==46)throw new Error('Catálogo incorreto.');
+  const rows=catalog.projetos.map(p=>[p.id,p.titulo,p.modalidade,p.area_tematica,p.data,p.inicio,p.fim,p.formato,p.local]);
+  projetos.getRange(2,1,rows.length,9).setValues(rows);
+ }
+ return verificarIntegridadePlanilha_();
+}
+function verificarIntegridadePlanilha_(){
+ const ss=SpreadsheetApp.openById(prop_('SPREADSHEET_ID'));
+ const expected={
+  Projetos:['id','titulo','modalidade','area_tematica','data','inicio','fim','formato','local'],
+  Codigos:['hash_codigo','habilitado','criado_em'],
+  Avaliacoes:['id_requisicao','hash_codigo','id_projeto','criatividade','clareza','relevancia','demonstracao','nota_ponderada','timestamp','estado'],
+  Configuracao:['chave','valor']
+ };
+ Object.keys(expected).forEach(n=>{
+  const sh=ss.getSheetByName(n);if(!sh)throw new Error('Aba ausente: '+n);
+  const header=sh.getRange(1,1,1,expected[n].length).getValues()[0];
+  if(expected[n].some((v,i)=>header[i]!==v))throw new Error('Cabeçalho incorreto na aba '+n);
+ });
+ const rows=ss.getSheetByName(SHEETS.projetos).getDataRange().getValues().slice(1);
+ const ids=rows.map(r=>r[0]);
+ const nac=rows.filter(r=>r[2]==='Mostra Nacional').length;
+ const ext=rows.filter(r=>r[2]==='Mostra de Extensão').length;
+ if(rows.length!==46||new Set(ids).size!==46||nac!==24||ext!==22)throw new Error('Projetos não batem com catálogo 46=24+22');
+ const cfg=readConfig_(ss);
+ return {ok:true,projetos:rows.length,nacional:nac,extensao:ext,votacao_aberta:cfg.votacao_aberta};
 }
 function registrarAvaliacao(payload){
  if(!payload || typeof payload.id_requisicao!=='string' || !/^[a-zA-Z0-9-]{16,80}$/.test(payload.id_requisicao) || typeof payload.codigo!=='string' || !/^[a-zA-Z0-9]{32,128}$/.test(payload.codigo.trim()) || typeof payload.id_projeto!=='string' || !/^(NAC|EXT)-\d{3}$/.test(payload.id_projeto) || typeof payload.notas!=='object') throw new Error('Dados incompletos ou inválidos.');
@@ -46,7 +87,7 @@ function registrarAvaliacao(payload){
   const votes=ss.getSheetByName(SHEETS.avaliacoes);const all=votes.getDataRange().getValues();
   const prior=all.slice(1).find(r=>r[0]===payload.id_requisicao);
   if(prior){
-    if(prior[1]!==hash||prior[2]!==payload.id_projeto)throw new Error('ID de requisição já utilizado com outro envio.');
+    if(prior[1]!==hash||prior[2]!==payload.id_projeto||CRITERIA.some((k,i)=>Number(prior[i+3])!==Number(notas[k])))throw new Error('ID de requisição já utilizado com dados diferentes.');
     return {status:'ja_processada',id_requisicao:payload.id_requisicao,nota:Number(prior[7])};
   }
   if(all.slice(1).some(r=>r[1]===hash&&r[2]===payload.id_projeto&&r[9]==='VALIDA'))throw new Error('Este código já avaliou este projeto.');
