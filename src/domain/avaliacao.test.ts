@@ -1,0 +1,3 @@
+import {describe,it,expect} from 'vitest';
+import {notaPonderada,validarNotas,normalizarBusca} from './avaliacao';
+describe('regras de avaliação',()=>{it('calcula [4,5,4,3] como 4,15',()=>expect(notaPonderada({criatividade:4,clareza:5,relevancia:4,demonstracao:3})).toBe(4.15));it('rejeita nota decimal',()=>expect(()=>validarNotas({criatividade:4.5,clareza:5,relevancia:4,demonstracao:3})).toThrow());it('rejeita ausência e faixa inválida',()=>{expect(()=>validarNotas({})).toThrow();expect(()=>validarNotas({criatividade:0,clareza:5,relevancia:4,demonstracao:3})).toThrow()});it('busca ignora acentos',()=>expect(normalizarBusca('Extensão')).toBe('extensao'));});

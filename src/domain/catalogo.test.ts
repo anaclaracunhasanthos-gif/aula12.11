@@ -1,0 +1,3 @@
+import {describe,it,expect} from 'vitest';
+import catalogo from '../data/catalogo.json';
+describe('integridade do catálogo',()=>{const ps=catalogo.projetos;it('possui 46 projetos únicos, 24 nacionais e 22 extensão',()=>{expect(ps).toHaveLength(46);expect(new Set(ps.map(p=>p.id)).size).toBe(46);expect(ps.filter(p=>p.modalidade==='Mostra Nacional')).toHaveLength(24);expect(ps.filter(p=>p.modalidade==='Mostra de Extensão')).toHaveLength(22)});it('possui todos os campos obrigatórios',()=>{for(const p of ps)for(const k of ['id','titulo','modalidade','area_tematica','data','inicio','fim','formato','local','fontes'])expect(p[k as keyof typeof p]).toBeDefined()});});
