@@ -40,6 +40,12 @@ Consulte [docs/REGISTRO_PUBLICACAO.md](docs/REGISTRO_PUBLICACAO.md) para links, 
 - `docs/CONFIGURAR_GOOGLE.md`
 - `docs/TESTES_E_QA.md`
 
+## Planilha Google Sheets — estrutura criada
+
+A planilha **privada** da equipe foi criada no Google Drive em 13/11/2026, com as quatro abas de armazenamento (`Projetos`, `Codigos`, `Avaliacoes`, `Configuracao`) e catálogo validado de 46 projetos. Não foram emitidos códigos nem registrados votos de produção; `votacao_aberta=false`. A API Google Sheets confirmou escrita/leitura em aba temporária de QA e exclusão posterior.
+
+O projeto Google Apps Script **ainda precisa ser criado e implantado** a partir da planilha. Siga [docs/CONFIGURAR_GOOGLE.md](docs/CONFIGURAR_GOOGLE.md). Nenhum identificador privado de planilha deve ser guardado no GitHub.
+
 ## Limitações atuais
 O **frontend estático está publicado para prévia**, mas ainda não há conexão com uma planilha real, votação pública, teste de voto com recibo ou homologação integral. Não declarar que a avaliação popular esteja operacional até completar integração e QA.
 
