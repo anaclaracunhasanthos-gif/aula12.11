@@ -24,8 +24,15 @@ Defina `VITE_BASE_PATH=/nome-do-repositorio/` para GitHub Pages em subcaminho. D
 ## Arquitetura e segurança
 React/Vite/TypeScript é o catálogo estático. Google Apps Script + Google Sheets fazem validação, persistência e agregação. Não há login visitante nem banco adicional. O backend usa hash SHA-256 dos tokens, LockService e idempotência. A integração de voto usa HTML Service/`google.script.run`, evitando fingir confirmação com `no-cors`.
 
-## Publicação
-Workflow `/.github/workflows/pages.yml`: configurar Pages → Source = GitHub Actions. O deploy está limitado a execução manual (`workflow_dispatch`) e depende de aprovação adicional da equipe.
+## Prévia no GitHub Pages
+
+**[Abrir Universo IF Avalia](https://anaclaracunhasanthos-gif.github.io/aula12.11/)**
+
+A prévia estática do frontend foi publicada em 12/11/2026 via GitHub Actions, [workflow de deploy — tentativa 3](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43275492418) (build e publicação concluídos com sucesso). Código-fonte na branch `feat/universo-if-avalia-mvp`; o Pull Request [#1](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/1) segue em rascunho, sem merge.
+
+O GitHub Pages hospeda **somente a interface pública de catálogo**; não hospeda servidor de votos. A prévia não está conectada à planilha e não aceita votos reais. O build publicado usa `VITE_BASE_PATH=/aula12.11/`.
+
+Consulte [docs/REGISTRO_PUBLICACAO.md](docs/REGISTRO_PUBLICACAO.md) para links, commit de origem e evidências.
 
 ## Documentação
 - `docs/AUDITORIA_CATALOGO.md`
@@ -34,12 +41,12 @@ Workflow `/.github/workflows/pages.yml`: configurar Pages → Source = GitHub Ac
 - `docs/TESTES_E_QA.md`
 
 ## Limitações atuais
-A aplicação ainda não está publicada nem conectada a uma planilha real. Não declare homologação até completar o roteiro de integração e QA.
+O **frontend estático está publicado para prévia**, mas ainda não há conexão com uma planilha real, votação pública, teste de voto com recibo ou homologação integral. Não declarar que a avaliação popular esteja operacional até completar integração e QA.
 
-**Publicação:** o workflow Pages é manual (workflow_dispatch); não executar sem aprovação adicional. O frontend pode ser examinado localmente com `npm run dev`. A integração com a planilha permanece bloqueada até autorização específica.
+**Controle de mudanças:** não efetuar merge sem nova autorização. Atualizações futuras do Pages devem ser revisadas e autorizadas. O frontend também pode ser examinado localmente com `npm run dev`. A integração com a planilha permanece bloqueada até autorização específica.
 
 ## Primeiro teste do frontend
 - CI: **PASS** — 10 testes Vitest, TypeScript e Vite (`GitHub Actions`, execução [43272799425](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43272799425)).
-- Build do React disponível como artefato `universo-if-avalia-primeiro-frontend` na execução acima, sem publicação.
+- Build do React disponível como artefato `universo-if-avalia-primeiro-frontend` na execução acima; a prévia pública do frontend foi implantada posteriormente pelo workflow 43275492418.
 - Revisão visual com Chromium em desktop 1365 px e celular simulado 390 px, com busca, filtros e detalhes testados.
 - Consulte [docs/STATUS_EXECUCAO.md](docs/STATUS_EXECUCAO.md) e [docs/TESTES_E_QA.md](docs/TESTES_E_QA.md) para evidências e bloqueios.
