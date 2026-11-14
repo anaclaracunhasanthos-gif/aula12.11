@@ -12,3 +12,13 @@ Solicitação explícita da equipe: visualizar o **frontend público** do Univer
 Este arquivo aciona **uma tentativa específica de publicação da prévia** via GitHub Actions. Se o Pages ainda não estiver habilitado, a equipe deve selecionar **Settings → Pages → Build and deployment → Source: GitHub Actions**. Depois poderá reexecutar o workflow manualmente, respeitando a autorização já concedida apenas para esta prévia.
 
 Não efetuar merge nem ativar a votação do backend sem aprovação específica.
+
+## Segunda prévia — formulário conectado (14/11/2026)
+
+- A responsável solicitou iniciar a abertura da avaliação pública e informou a URL `/exec` do Apps Script.
+- O build do catálogo agora inclui `VITE_GAS_APP_URL` (URL pública da aplicação, sem senhas).
+- **A planilha continua com `votacao_aberta=false` durante o teste de navegação.** Nenhum código de avaliação foi emitido nem voto registrado por esta alteração.
+- Antes da abertura efetiva, confirmar acesso público do Apps Script, emitir códigos de forma privada, verificar permissão institucional e executar QA de avaliação/recibo/duplicidade.
+- Esta mudança não faz merge do pull request nem publica o conteúdo privado da planilha.
+
+O presente commit aciona a atualização do GitHub Pages via workflow já configurado.
