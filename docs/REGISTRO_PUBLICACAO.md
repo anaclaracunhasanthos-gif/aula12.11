@@ -1,28 +1,41 @@
 # Registro de publicação — Universo IF Avalia
 
-**Projeto:** protótipo acadêmico (não é votação oficial).
+**Atualização: 22/11/2026.** Projeto acadêmico educativo — não representa votação ou julgamento científico oficial do evento.
 
-## Endereços
-- [Prévia do frontend no GitHub Pages](https://anaclaracunhasanthos-gif.github.io/aula12.11/)
-- [Repositório](https://github.com/anaclaracunhasanthos-gif/aula12.11)
-- [Branch de desenvolvimento](https://github.com/anaclaracunhasanthos-gif/aula12.11/tree/feat/universo-if-avalia-mvp)
-- [Pull Request #1 (rascunho)](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/1)
-- [GitHub Actions: deploy aprovado, tentativa 3](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43275492418)
+## Endereços públicos
 
-## Evidência de implantação
-- Em **12/11/2026**, o workflow do GitHub Pages registrou `build: success`, `deploy: success` e `Reported success!`.
-- Commit-fonte da prévia publicada: `1904b48885e159fbb192dd9c898a7bb05a7dc891`.
-- URL informada pelo próprio log do deploy: `https://anaclaracunhasanthos-gif.github.io/aula12.11/`.
-- A interface usa React + Vite + TypeScript, com caminho-base `/aula12.11/`.
-- Catálogo de 46 projetos (24 Nacional, 22 Extensão); ver [auditoria](AUDITORIA_CATALOGO.md).
+- [Site Web e Mobile no GitHub Pages](https://anaclaracunhasanthos-gif.github.io/aula12.11/)
+- [Repositório no GitHub](https://github.com/anaclaracunhasanthos-gif/aula12.11)
+- [Branch com o código completo](https://github.com/anaclaracunhasanthos-gif/aula12.11/tree/feat/universo-if-avalia-mvp)
+- [Código-fonte do Google Apps Script](../backend/Code.gs)
+- [Pull Request #1, ainda em rascunho](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/1)
+- [GitHub Actions — publicação confirmada em 14/11/2026](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43631300598)
+- [GitHub Actions — 14 testes aprovados em 22/11/2026](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45041566549)
 
-## O que está publicado
-Somente o frontend estático de consulta, busca, filtros e detalhes. O diretório compilado `dist/` é um **artefato de CI**, não deve ser adicionado ao Git apenas para servir ao Pages.
+**Não publicar aqui links de edição das planilhas, IDs privados, tokens, credenciais ou recibos individuais.** O professor pode ler o backend versionado, mas não recebe automaticamente acesso ao editor Apps Script nem à base de votos.
 
-## Limites
-- Esta prévia **não recebe votos reais**: o Google Apps Script/Sheets ainda não foi implantado nem homologado.
-- A visita ao site em navegador real de usuário e o QA em aparelho físico ainda precisam ser confirmados pela equipe.
-- Nenhum merge foi autorizado ou realizado: o Pull Request segue em rascunho.
-- Manter códigos de votação, dados pessoais e planilhas privadas fora do repositório público.
+## O que foi publicado
 
-Documento criado para registrar a publicação no histórico do Git, sem acionar uma nova implantação.
+1. **12/11/2026:** primeira prévia estática do catálogo React/Vite/TypeScript no GitHub Pages. Evidência histórica: [workflow inicial](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43275492418).
+2. **14/11/2026:** nova publicação do Pages via workflow, com a URL `VITE_GAS_APP_URL` configurada para o Web App de produção; [build e deploy aprovados](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43631300598). O catálogo direciona o visitante ao formulário do projeto correspondente.
+3. **22/11/2026:** o repositório de desenvolvimento possui **14 testes automatizados aprovados**, incluindo verificações isoladas da regra de votação no `Code.gs`, com TypeScript e build aprovados. Essas atualizações **não são automaticamente publicadas** no Pages.
+4. A responsável também **implantou separadamente** um Web App de homologação. A tentativa de abrir o formulário dessa implantação apresentou erro de acesso; os testes reais de ponta a ponta nesse ambiente **continuam pendentes**.
+
+## Funcionamento observado
+
+- Catálogo de 46 projetos (24 Nacional e 22 Extensão) acessível pelo link público.
+- Formulário do projeto foi aberto em celular pela responsável.
+- Um voto válido com recibo consta na planilha privada da produção.
+- O envio de um código inválido na interface oficial resultou na rejeição esperada.
+- A configuração oficial de votação estava **fechada** na última leitura, em 22/11/2026. A possibilidade de acessar o formulário **não significa** que novos votos estejam abertos.
+- O ranking usa duas modalidades e mínimo de 5 votos válidos; a verificação com cinco votos em Web App real ainda falta.
+
+## Versionamento e limitações
+
+- O workflow do Pages em `.github/workflows/pages.yml` publica o frontend estático `dist/` e **não** publica o servidor Google Apps Script.
+- Publicação mais recente do Pages confirmada: **14/11/2026**, commit `4558cee1f149`.
+- A branch de desenvolvimento recebeu commits posteriores, inclusive correções em telas HTML de backend; uma implantação Apps Script exige nova versão no editor para refletir essas alterações.
+- **Não foi feito merge na `main`**; o PR #1 segue aberto em rascunho.
+- Homologação integral, desempenho e acessibilidade em aparelhos reais, duplicidade/concorrência no Apps Script de teste e aceite institucional seguem pendentes.
+
+Para o estado atual, consultar [Status de execução](STATUS_EXECUCAO.md) e [Testes e QA](TESTES_E_QA.md).
