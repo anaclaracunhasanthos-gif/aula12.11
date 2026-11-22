@@ -35,10 +35,13 @@ Cobertura inicial: contagem e campos do catálogo; IDs únicos e divisão 24/22;
   - nenhum erro JavaScript durante o percurso.
 - Capturas de desktop e celular foram disponibilizadas na conversa para revisão da equipe; esta verificação não substitui QA independente.
 
-## Bloqueios restantes
+## Situação consolidada em 22/11/2026
+- GitHub Pages: **DEPLOY PASS (prévia estática)** — https://anaclaracunhasanthos-gif.github.io/aula12.11/ . A URL foi registrada pelo workflow de deploy; a equipe ainda precisa confirmar o acesso em seus próprios dispositivos.
+- A prévia publicada não está conectada à planilha e **não habilita votação real**.
 - PDF página a página: conferência independente pendente.
-- Envio real de voto, recibo e leitura no Sheets: **BLOCKED**, exige implantação e autorização.
+- Envio real de voto, recibo, readback e concorrência no Sheets: **BLOCKED**, exige implantação do Apps Script e autorização específica.
 - QA independente em smartphone físico: **NOT_RUN**.
-- GitHub Pages: **NÃO PUBLICADO**, requer aprovação explícita e acionamento manual.
+- `package-lock.json`: ainda não versionado. Gerar e validar o lockfile em ambiente com acesso ao registro npm antes de trocar `npm install` por `npm ci`.
 
-O ambiente local não acessou o registro npm para instalar dependências; os testes, tipos e build foram executados com sucesso no GitHub Actions. Ainda não há `package-lock.json` versionado; gerar e adicionar antes de trocar `npm install` por `npm ci` para garantir instalações reprodutíveis.
+## Limitações conhecidas
+O teste automatizado de Chromium em viewport móvel não substitui QA em aparelho físico. Nenhuma homologação deve ser declarada concluída sem evidências dos testes reais de integração e do dispositivo.
