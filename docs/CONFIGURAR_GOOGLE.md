@@ -1,34 +1,53 @@
-# Configurar Google Sheets e Apps Script — Universo IF Avalia
+# Configuração do Google Sheets e Google Apps Script
 
-## Planilha criada
+**Atualizado em 22/11/2026.** A integração com o Apps Script já foi realizada. Este documento descreve a configuração existente e os cuidados para novas implantações, **sem divulgar dados privados**.
 
-A planilha privada **Universo IF Avalia — Base de avaliações (privada) — 2026** já existe na conta conectada. Contém:
-- `Projetos`: 46 projetos (24 Mostra Nacional, 22 Mostra de Extensão), título, área, data, horários, local, fontes documentais.
-- `Codigos`: somente cabeçalho; nenhum código válido foi emitido.
-- `Avaliacoes`: somente cabeçalho; nenhum voto real foi gravado.
-- `Configuracao`: `votacao_aberta=false`, `minimo_ranking=5`, datas inicialmente vazias.
+## Arquitetura
 
-**A planilha é privada** e não deve ser compartilhada publicamente. O ID dela e tokens de votação não ficam no GitHub.
+- **GitHub Pages:** catálogo React/Vite/TypeScript público; link no [README](../README.md).
+- **Google Apps Script:** recebe avaliações, valida os códigos e calcula o ranking; arquivos-fonte versionados em `backend/`.
+- **Google Sheets:** base **privada**, com as abas `Projetos`, `Codigos`, `Avaliacoes` e `Configuracao`.
 
-## Conexão ao Apps Script — execução pelo proprietário
+O repositório contém **o código-fonte**, não o acesso de edição ao projeto do Apps Script da conta Google. É necessário implantar alterações no editor do Google.
 
-A conexão do Drive não concede automaticamente permissão para criar, configurar ou publicar projetos Google Apps Script. Ainda é necessário:
+## Situação observada na base principal
 
-1. Abra a planilha privada no Google Sheets da sua conta.
-2. Acesse **Extensões → Apps Script**. Isso criará um projeto vinculado à planilha.
-3. Copie `backend/Code.gs` no editor Apps Script e crie os arquivos HTML `Client`, `Home`, `Ranking`, `Styles` e `Vote`, usando o código de mesmo nome da branch do GitHub.
-4. Vá a **Configurações do projeto → Propriedades do script** e crie `SPREADSHEET_ID` com o ID da planilha privada. Não coloque esse identificador nem credenciais na branch pública.
-5. Execute `verificarIntegridadePlanilha_()` pelo editor **apenas se o editor permitir selecionar funções internas com sufixo `_`**; caso não apareçam no seletor, crie temporariamente uma função de teste `function verificarInstalacao(){ return verificarIntegridadePlanilha_(); }` e remova-a antes da publicação. Os dados esperados são `{ok:true,projetos:46,nacional:24,extensao:22,votacao_aberta:'false'}`.
-6. `setupPlanilha_()` agora é **não destrutiva**; a planilha já está preenchida e normalmente não precisa dessa rotina. Ela preserva códigos, avaliações e projetos existentes.
-7. A implantação do Apps Script como **App da Web** e seu acesso anônimo exigem aprovação e conferência da política da instituição. Antes de expor o aplicativo, não habilite votos reais.
-8. Depois de implantado com autorização, obtenha a URL `/exec`, configure no repositório a variável GitHub Actions `VITE_GAS_APP_URL` e gere novo build de Pages. A aplicação React direcionará para formulários HTML Service/Google Script Run (não usa `no-cors`).
-9. Em um período de homologação autorizado, emita códigos exclusivamente pelo editor com `emitirCodigosExportacao_(qtd)`; mantenha-os privados. Abra `votacao_aberta=true` apenas durante o ensaio autorizado, envie uma avaliação com 4 notas, confira recibo, faça a leitura da linha em `Avaliacoes` e tente o mesmo código no mesmo projeto novamente. Após o ensaio, feche a votação e documente os resultados.
-10. Teste smartphone real, browser sem login, ranking com amostra mínima e casos de erro/duplicidade/concorrência. **Não declare a homologação concluída sem evidências reais.**
+| Item | Estado na consulta de 22/11/2026 |
+| --- | --- |
+| Projetos | 46, sendo 24 Mostra Nacional e 22 Mostra de Extensão |
+| Códigos | 10 habilitados, 20 desativados; somente hashes na planilha |
+| Avaliações | 1 linha válida confirmada |
+| Mínimo do ranking | 5 votos válidos por projeto |
+| Votação | **Fechada**: o valor observado não corresponde à string `true` exigida pelo backend |
 
-## Limitações e segurança
+O formulário publicado foi aberto em dispositivo móvel pela equipe; houve confirmação de voto válido e rejeição de código inválido. **Isso não comprova** ainda bloqueio de duplicidade e concorrência diretamente no servidor público. Não mudar o estado da votação sem autorização de quem coordena o evento.
 
-- Acesso ao Drive/Sheets não dá acesso de escrita ao serviço Apps Script; portanto **o backend ainda não foi implantado nem conectado por URL**.
-- O arquivo `Code.gs` verifica autorização do código no servidor, recalcula a nota, usa `LockService`, retorna recibo após `SpreadsheetApp.flush()` e readback.
-- A rotina de configuração foi corrigida para não apagar dados existentes. ID de requisição repetido com notas diferentes é rejeitado.
-- Códigos são tratados como credenciais, armazenados apenas por SHA-256 e nunca enviados para GitHub.
-- O token não autentica identidade pessoal e não deve ser publicado em URL ou log.
+## Ambiente separado de homologação
+
+Há uma **segunda planilha privada**, com 46 projetos, cinco códigos exclusivos de teste e **nenhum voto de teste** até a consulta de 22/11/2026. A configuração dessa segunda planilha permite votação de teste. Um **segundo projeto Apps Script** foi montado e implantado pela responsável, mas o formulário de homologação apresentou dificuldade de acesso no navegador. Sua implantação e permissões ainda precisam ser validadas antes dos ensaios reais.
+
+**Nunca usar códigos da homologação no site oficial, nem dados reais dos participantes na planilha de teste.** Os identificadores e os códigos estão disponíveis somente para a equipe autorizada fora do GitHub.
+
+## Como configurar ou conferir uma implantação
+
+1. Em um projeto Apps Script separado, adicionar `backend/Code.gs` como arquivo de script e criar os HTML `Client`, `Home`, `Ranking`, `Styles` e `Vote` com o conteúdo versionado no GitHub.
+2. Abrir **Configurações do projeto → Propriedades do script** e configurar `SPREADSHEET_ID` com o ID da **planilha daquele ambiente**, nunca misturando produção e homologação. Não escrever esse ID no GitHub.
+3. Confirmar a existência das quatro abas com os cabeçalhos esperados. A função `verificarIntegridadePlanilha_()` valida estrutura e 46=24+22; por terminar em `_`, pode não aparecer na seleção de execução direta. Se necessário, um wrapper administrativo temporário deve ser removido antes de implantar.
+4. `setupPlanilha_()` preserva abas já preenchidas, mas **não deve ser executada sem necessidade**. Não limpar ou recriar a base oficial para realizar testes.
+5. Usar **Implantar → Nova implantação → App da Web** ou **Gerenciar implantações → Nova versão**. Definir quem executa e quem pode acessar segundo o ambiente e as permissões institucionais. Para homologação privada, conferir a conta autorizada. Para acesso público, a revisão de segurança e autorização da equipe são obrigatórias.
+6. No frontend, o workflow `.github/workflows/pages.yml` define `VITE_GAS_APP_URL`, apontando ao **Web App público** de produção. Sua atualização exige um novo build/deploy aprovado do Pages. **Não apontar esse build público para o ambiente de homologação.**
+
+Uma nova versão no GitHub **não** atualiza automaticamente o código já implantado no Apps Script.
+
+## Regras e cuidados de segurança
+
+- `registrarAvaliacao` rejeita votação fechada, código inválido/desabilitado, projeto inexistente, notas incorretas e repetição de um par código/projeto.
+- O servidor usa SHA-256 para validar o código, `LockService` para serializar gravações, recibo e releitura da linha gravada.
+- Uma requisição idêntica repetida retorna `ja_processada` sem registrar novo voto; o mesmo ID com dados diferentes é rejeitado.
+- Funções administrativas temporárias **não devem ficar expostas** no Web App. Funções com sufixo `_` não são chamadas diretamente pelo `google.script.run`; revisar também as funções públicas auxiliares antes do uso institucional.
+- Não colocar tokens em URLs, logs, README, issues, capturas públicas ou planilhas compartilhadas.
+- Manter a planilha principal privada; acesso do professor ao GitHub **não concede** acesso aos dados de votação.
+
+## Homologação pendente
+
+Antes de declarar o sistema totalmente homologado, confirmar **no Web App de testes**: envio com código válido e recibo, rejeição do segundo voto do mesmo código/projeto, aceitação em projeto diferente, ranking com cinco avaliações, acesso e desempenho em celulares reais, acessibilidade e concorrência. Registre resultados em [TESTES_E_QA.md](TESTES_E_QA.md).
