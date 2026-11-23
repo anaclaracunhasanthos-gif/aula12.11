@@ -1,10 +1,10 @@
 # Status de execução — Universo IF Avalia
 
-**Atualizado em 23/11/2026.** Site em operação; **homologação parcial com ressalvas**; branch estável preparada para revisão.
+**Atualizado em 23/11/2026.** Site em operação; **homologação parcial com ressalvas**; versão estável integrada à `main` com autorização explícita.
 
 | Etapa | Situação em 23/11/2026 | Evidência |
 | --- | --- | --- |
-| G0 — Repositório | **Em revisão** | `main` somente com README; branch `release/universo-if-avalia-v1-estavel` criada. PR de acessibilidade futura separado |
+| G0 — Repositório | **Estável na `main`** | [PR #2 integrado](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2), commit `63ebd68de537`; PR de acessibilidade futura separado |
 | G1 — Catálogo | **Aprovado** | 46 IDs: 24 Nacional + 22 Extensão; busca, filtros, detalhes |
 | G2 — Frontend e build | **Aprovado** | TypeScript, testes Vitest, build e GitHub Pages publicado |
 | G3 — Dados oficiais | **Conferido** | 46 projetos, 80 hashes (60 ativos, 20 inativos), 8 avaliações válidas no retrato |
@@ -13,7 +13,7 @@
 | G6 — Homologação real separada | **Parcial** | Cinco códigos de teste e oito votos de homologação; faltam stress real e auditoria completa |
 | G7 — Testes da versão estável | **Aprovado** | 16 Vitest + verificação de concorrência simulada com 24 workers; CI/build |
 | G8 — Acessibilidade futura | **Adiada** | Melhorias já desenvolvidas em `feat/universo-if-avalia-mvp`, sem incluir na release |
-| G9 — Integração `main` | **Não realizada** | Preparar revisão e pedir aprovação explícita antes de fazer merge |
+| G9 — Integração `main` | **Concluída** | Merge squash do PR #2, commit `63ebd68de537`; sem nova implantação do site |
 
 ## Produção
 
@@ -34,6 +34,6 @@
 
 - A release estável foi derivada do commit anterior às correções de acessibilidade (`5e6c8e4b6c52`), acrescentando **apenas documentação e teste de concorrência isolado**, sem alterar o frontend ou o backend que os participantes usam.
 - O site oficial não foi atualizado por esta etapa. O fluxo Pages não publica automaticamente alterações ao preparar um PR para `main`.
-- Antes de integrar a versão estável à `main`, consultar [Guia de release](GUIA_RELEASE_MAIN.md) e [Relatório consolidado](RELATORIO_HOMOLOGACAO_ETAPA.md).
+- A integração estável à `main` foi concluída. Para próximas releases, consultar [Guia de release](GUIA_RELEASE_MAIN.md) e [Relatório consolidado](RELATORIO_HOMOLOGACAO_ETAPA.md).
 
-**Não misturar dados de produção/homologação, não expor códigos ou recibos e não executar merge sem autorização expressa.**
+**Não misturar dados de produção/homologação nem expor códigos ou recibos.** Novas publicações e futuros merges exigem decisões próprias.
