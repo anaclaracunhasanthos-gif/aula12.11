@@ -6,8 +6,8 @@
 
 - **[Abrir o site no celular ou notebook](https://anaclaracunhasanthos-gif.github.io/aula12.11/)**
 - [Formulários e ranking no Web App oficial](https://script.google.com/macros/s/AKfycbz4LOGOx52e0ErthiXDlKXCmk0FsNLPCGYKmrBDS4L-hVAs6GjaVxAZylIdNf7EZs8lKw/exec)
-- [Branch preparada para integração estável](https://github.com/anaclaracunhasanthos-gif/aula12.11/tree/release/universo-if-avalia-v1-estavel)
-- [Pull Request #2 — revisão da versão estável, sem merge](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2)
+- [Código principal na `main`](https://github.com/anaclaracunhasanthos-gif/aula12.11/tree/main)
+- [Pull Request #2 — versão estável integrada](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2)
 - [Branch de desenvolvimento com acessibilidade futura](https://github.com/anaclaracunhasanthos-gif/aula12.11/tree/feat/universo-if-avalia-mvp)
 
 **Estado em 23/11/2026:** site e formulário acessíveis em celular e notebook, conforme teste manual da responsável; votação oficial aberta pela equipe organizadora segundo a responsável; planilha privada de produção com **46 projetos, 80 hashes de códigos (60 habilitados, 20 desabilitados) e 8 avaliações válidas observadas na consulta**. A contagem pode aumentar após a consulta.
@@ -61,8 +61,8 @@ Para execução com backend próprio, configurar `VITE_GAS_APP_URL` com uma impl
 
 ## Versões, privacidade e colaboração
 
-A `main` ainda contém somente o README histórico. Esta branch `release/universo-if-avalia-v1-estavel` **não foi integrada** à `main`. O PR #1 continua para desenvolvimento e acessibilidade futura; o [PR #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2) está aberto **em rascunho**, aguardando revisão e autorização explícita de merge.
+A `main` contém a versão estável do sistema desde **23/11/2026**, integrada pelo [PR #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2), commit de integração `63ebd68de537`. O PR #1 permanece para desenvolvimento e futuras melhorias de acessibilidade, **sem integrar essas mudanças na versão estável**.
 
 **Não versionar** planilhas privadas, códigos em texto puro, recibos, credenciais ou tokens. Publicar código-fonte não concede acesso às avaliações e aos códigos privados do Google Drive.
 
-A integração à `main` e qualquer nova publicação do site ou do Apps Script exigem autorização separada; o funcionamento da votação oficial deve ser preservado.
+A integração à `main` foi autorizada e concluída. **Qualquer nova publicação do site ou do Apps Script ainda exige autorização separada**; o funcionamento da votação oficial deve ser preservado.
