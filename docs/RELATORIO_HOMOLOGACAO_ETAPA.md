@@ -57,14 +57,14 @@ As funções de emissão e preparação do backend terminam com `_`, reduzindo s
 1. **Concorrência real:** não houve ensaio rigoroso de requisições simultâneas no serviço do Google. Executar apenas na implantação de homologação, sem votos artificiais na produção.
 2. **Acessibilidade:** a auditoria completa com leitor de tela, teclado e diferentes ampliações foi **adiada por escolha da responsável**. Alterações preparadas estão apenas na branch `feat/universo-if-avalia-mvp`.
 3. **Administração e implantação:** confirmar versão publicada, propriedades do Apps Script, isolamento das funções administrativas e acesso à planilha.
-4. **Organização da `main`:** preparar revisão da versão estável; **não fazer merge, alterar o site publicado ou publicar novas versões do Apps Script sem autorização específica**.
+4. **Organização da `main`:** **concluída em 23/11/2026**, após autorização da responsável. [PR #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2) integrado pelo commit `63ebd68de537`. Não houve nova publicação do site ou do Apps Script.
 5. **Operação:** monitorar votos e mensagens de erro sem divulgar dados pessoais ou códigos.
 
 ## 6. Conclusão e decisão
 
 **Os fluxos principais funcionam e o sistema oficial recebe avaliações.** A etapa atual está documentada e apta a avaliação da equipe organizadora. Contudo, a conclusão técnica permanece **PARCIAL, COM RESSALVAS**; não declarar “100% homologado”, nem certificação completa de acessibilidade e segurança.
 
-**Separação das versões:** esta branch `release/universo-if-avalia-v1-estavel` preserva a versão funcional sem as melhorias de acessibilidade, que continuam para uma atualização futura. A `main` não deve ser alterada por publicação automática ou merge implícito.
+**Separação das versões:** a `main` agora contém a versão estável derivada de `release/universo-if-avalia-v1-estavel`, sem as melhorias de acessibilidade, que continuam para uma atualização futura. A integração ao GitHub não alterou os votos nem implicou nova publicação.
 
 ## 7. Links públicos
 
