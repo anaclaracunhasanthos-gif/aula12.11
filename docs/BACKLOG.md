@@ -15,14 +15,14 @@
 | S9 | Auditoria integral de configuração administrativa do Apps Script | **Pendente; verificar implantação/propriedades e funções internas** |
 | S10 | Acessibilidade: contraste, leitores de tela, áreas de toque, zoom | **Adiada por decisão da responsável; código preparado na branch de desenvolvimento** |
 | S11 | Relatório e documentação do estágio atual | **Atualizados na branch estável** |
-| S12 | Pull Request estável e integração na `main` | **Revisão pendente; merge exige autorização específica** |
+| S12 | Pull Request estável e integração na `main` | **Concluído em 23/11/2026**: PR #2 integrado; commit `63ebd68de537` |
 | S13 | Proteção da `main` e revisão obrigatória | **Depende de permissão administrativa no GitHub** |
 | S14 | Monitoramento de votos oficiais durante operação | **Contínuo; sem publicar informações privadas** |
 
 ## Ordem sugerida
 
-1. Revisar a branch `release/universo-if-avalia-v1-estavel` e aguardar CI.
-2. Confirmar revisão técnica e aprovar separadamente um eventual merge para `main`.
+1. **Concluído:** revisar a versão estável; CI e merge do PR #2 aprovados.
+2. **Concluído:** versão estável integrada à `main`; preservar PR #1 para acessibilidade futura.
 3. Conferir versão e propriedades do Apps Script publicado sem alterar votos.
 4. Monitorar operação. Fazer ensaio de concorrência real **em homologação**, quando viável.
 5. Programar melhorias de acessibilidade e auditoria manual para uma atualização futura, com publicação controlada.
