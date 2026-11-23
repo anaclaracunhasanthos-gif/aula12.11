@@ -1,6 +1,6 @@
 # Registro de publicação — Universo IF Avalia
 
-**Atualização: 23/11/2026.** Esta etapa é de **documentação e preparação da branch estável**, não de nova publicação.
+**Atualização: 23/11/2026.** Versão estável integrada à `main` após autorização, **sem nova publicação do site**.
 
 ## URLs públicas atuais
 
@@ -17,14 +17,14 @@
 3. **23/11/2026:** última publicação do Pages confirmada nesta etapa; [workflow bem-sucedido](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45192119492), commit `783a5a2177fd`. A responsável confirmou navegação do catálogo, ranking e formulário.
 4. **23/11/2026:** links “← Catálogo” atualizados manualmente nos arquivos HTML do Apps Script oficial e implantados pela responsável. O botão foi confirmado como funcional nas telas oficiais.
 5. **23/11/2026:** votação oficial aberta mediante autorização relatada da organização; última consulta da base oficial encontrou **oito avaliações válidas** e **60 códigos habilitados**. Esses números mudam com novos votos.
-6. **23/11/2026:** uma branch de release estável, separada da acessibilidade futura, foi preparada para revisão. **Nenhuma publicação adicional no Pages ou Apps Script foi realizada por essa preparação.**
+6. **23/11/2026:** a branch de release estável foi preparada, separada da acessibilidade futura, e integrada à `main` pelo [PR #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2), commit `63ebd68de537`. **Nenhuma publicação adicional do Pages ou Apps Script foi realizada por esse merge.**
 
 ## Comportamento de implantação
 
 - O workflow `.github/workflows/pages.yml` atualmente permite publicação manual e um gatilho específico na branch de desenvolvimento, não implantação automática da `main`.
 - A branch `release/universo-if-avalia-v1-estavel` **não** dispara publicação por push.
 - A integração de arquivos de `backend/` no GitHub **não atualiza** o projeto Apps Script publicado; alterações exigem implantação no editor do Google.
-- A `main` não foi integrada. A versão de acessibilidade mais recente da branch de desenvolvimento também **não** foi publicada.
+- A `main` contém o código estável desde a integração do PR #2. A versão de acessibilidade mais recente da branch de desenvolvimento **não** foi integrada ou publicada.
 - A autorização para mesclar código e a autorização para publicar são decisões separadas.
 
 ## Segurança de publicação
