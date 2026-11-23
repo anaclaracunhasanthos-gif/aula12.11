@@ -5,6 +5,7 @@
 ## Endereços públicos
 
 - [Site Web e Mobile no GitHub Pages](https://anaclaracunhasanthos-gif.github.io/aula12.11/)
+- [Google Apps Script publicado — formulários e ranking](https://script.google.com/macros/s/AKfycbz4LOGOx52e0ErthiXDlKXCmk0FsNLPCGYKmrBDS4L-hVAs6GjaVxAZylIdNf7EZs8lKw/exec) (link público do Web App, não do editor privado)
 - [Repositório no GitHub](https://github.com/anaclaracunhasanthos-gif/aula12.11)
 - [Branch com o código completo](https://github.com/anaclaracunhasanthos-gif/aula12.11/tree/feat/universo-if-avalia-mvp)
 - [Código-fonte do Google Apps Script](../backend/Code.gs)
