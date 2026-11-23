@@ -1,13 +1,13 @@
 # Guia de organização da `main` e release estável
 
-**Atualização: 23/11/2026.** Preparação de versão estável **sem mudanças no site publicado**.
+**Atualização: 23/11/2026.** Versão estável integrada à `main` após autorização da responsável, **sem mudanças no site publicado**.
 
 ## Visão geral
 
 | Referência | Finalidade | Estado |
 | --- | --- | --- |
-| `main` | Código principal após revisão e autorização de merge | Contém somente `README.md` no início desta etapa; **não foi alterada** |
-| `release/universo-if-avalia-v1-estavel` | Candidata à primeira integração estável, mantendo a interface atual | Branch criada a partir da versão anterior às melhorias de acessibilidade e com documentação atualizada |
+| `main` | Código principal estável | Código integrado pelo [PR #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2), commit `63ebd68de537` |
+| `release/universo-if-avalia-v1-estavel` | Referência histórica da candidata estável | Integrada à `main` em 23/11/2026, sem melhorias futuras de acessibilidade |
 | `feat/universo-if-avalia-mvp` | Desenvolvimento e melhorias futuras, incluindo acessibilidade | PR #1 permanece em rascunho; **não usar para publicar as melhorias agora** |
 | GitHub Pages | Site público atualmente em uso | Mantido sem nova publicação por esta organização |
 | Apps Script oficial | Formulário e ranking publicados | Atualizações exigem procedimento separado no editor do Google |
@@ -30,19 +30,19 @@
 - [x] Manter valores privados fora do repositório.
 - [x] Incluir teste simulado de concorrência sem gravar dados reais.
 - [x] Conferir pipeline da versão estável (**16 Vitest, build e simulação de concorrência**): [CI aprovada](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45213083103).
-- [ ] Fazer revisão por pessoa autorizada.
+- [x] Versão estável validada por testes e integração expressamente autorizada pela responsável.
 - [ ] Verificar a identidade entre a revisão planejada e a implantação oficial do Apps Script (sem publicar automaticamente).
-- [ ] Autorizar explicitamente eventual merge para `main`; caso aprovado, registrar o SHA exato da integração.
-- [ ] Após merge, conferir a `main` e considerar proteger a branch com revisão obrigatória/checagens de CI (configuração depende de permissão administrativa).
+- [x] Merge autorizado e registrado: PR #2, commit de integração `63ebd68de537`.
+- [x] Conferir que a `main` contém a aplicação, os testes e a documentação. [ ] Avaliar proteção da branch com revisão/CI (depende de acesso administrativo).
 - [ ] Publicar site ou Apps Script apenas com autorização específica e testes de regressão. **Merge no Git não deve abrir/fechar votação e não deve enviar votos.**
 
 ## Fluxo seguro proposto
 
-1. Revisar o [Pull Request #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2) da branch `release/universo-if-avalia-v1-estavel` **para `main`**, mantendo o PR #1 de desenvolvimento separado.
-2. Confirmar que a PR está aprovada e a CI passou; ler os arquivos alterados.
-3. Solicitar aprovação explícita para o merge. Não executar merge por inferência de pedidos de “organização” ou “documentação”.
-4. Depois da aprovação, integrar uma versão estável à `main`, sem disparar implantação do Google Apps Script.
-5. Decidir em etapa posterior se a fonte da publicação do Pages deve migrar para a `main`. **O workflow atual não foi reconfigurado para publicação automática ao receber um merge.**
+1. **Concluído:** [PR #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2) integrado à `main`; o PR #1 continua para acessibilidade futura.
+2. **Concluído:** CI aprovada e diff da versão estável verificado antes da integração.
+3. **Concluído:** a responsável autorizou expressamente o merge e ele foi executado.
+4. **Concluído:** a versão estável foi integrada à `main`, sem implantação do Apps Script.
+5. **Futuro:** decidir, com autorização específica, se o Pages deve usar a `main`. **O workflow atual não publica automaticamente ao receber um merge.**
 6. Manter as melhorias de acessibilidade na branch de desenvolvimento para uma release futura.
 
 ## Sobre o site publicado
