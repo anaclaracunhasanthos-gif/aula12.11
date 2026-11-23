@@ -2,7 +2,7 @@ name: Verificações do MVP
 on:
   pull_request:
   push:
-    branches: [feat/universo-if-avalia-mvp]
+    branches: [main, release/universo-if-avalia-v1-estavel, feat/universo-if-avalia-mvp]
 permissions:
   contents: read
 jobs:
