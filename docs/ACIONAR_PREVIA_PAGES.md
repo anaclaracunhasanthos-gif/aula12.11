@@ -22,3 +22,15 @@ Não efetuar merge nem ativar a votação do backend sem aprovação específica
 - Esta mudança não faz merge do pull request nem publica o conteúdo privado da planilha.
 
 O presente commit aciona a atualização do GitHub Pages via workflow já configurado.
+
+
+## Atualização autorizada do site público — 23/11/2026
+
+- A responsável autorizou expressamente atualizar a prévia pública do site Universo IF Avalia.
+- Publicar exclusivamente o frontend estático desta branch pelo workflow do GitHub Pages.
+- A publicação **não** realiza merge na `main` e **não** publica planilhas, códigos de votação, hashes nem avaliações privadas.
+- O frontend continua apontando ao endereço já público `/exec` do Google Apps Script, **não** ao endereço privado de homologação `/dev`.
+- A planilha oficial foi conferida com `votacao_aberta = FALSE`: esta atualização não abre a votação.
+- Os 16 testes automatizados da branch passaram no GitHub Actions (run 45107298182).
+- As correções de navegação validadas em `/dev` pertencem ao Apps Script de homologação e não foram automaticamente implantadas no Apps Script de produção.
+- Esta alteração na documentação aciona uma nova publicação via o gatilho explícito `push.paths` do workflow, sem mudar a lógica do aplicativo.
