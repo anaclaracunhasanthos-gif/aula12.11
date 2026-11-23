@@ -1,53 +1,52 @@
-# Configuração do Google Sheets e Google Apps Script
+# Configuração e segurança do Google Sheets e Apps Script
 
-**Atualizado em 22/11/2026.** A integração com o Apps Script já foi realizada. Este documento descreve a configuração existente e os cuidados para novas implantações, **sem divulgar dados privados**.
+**Atualizado em 23/11/2026.** As instruções são operacionais, não incluem valores privados e **não autorizam alterações na base de produção por conta própria**.
 
 ## Arquitetura
 
-- **GitHub Pages:** catálogo React/Vite/TypeScript público; link no [README](../README.md).
-- **Google Apps Script:** recebe avaliações, valida os códigos e calcula o ranking; arquivos-fonte versionados em `backend/`.
-- **Google Sheets:** base **privada**, com as abas `Projetos`, `Codigos`, `Avaliacoes` e `Configuracao`.
+- Frontend público React/Vite/TypeScript no GitHub Pages com o catálogo de 46 projetos.
+- Google Apps Script serve o formulário e o ranking; código-fonte em `backend/` e implantação real no projeto Google de titularidade da equipe.
+- Google Sheets **privado**, abas `Projetos`, `Codigos`, `Avaliacoes`, `Configuracao`.
+- `SPREADSHEET_ID` é propriedade privada do projeto Apps Script; não inserir o ID no repositório, no frontend ou em documentos públicos.
+- O frontend usa a variável **pública** `VITE_GAS_APP_URL` apenas para apontar ao endereço `/exec` do Web App.
 
-O repositório contém **o código-fonte**, não o acesso de edição ao projeto do Apps Script da conta Google. É necessário implantar alterações no editor do Google.
+## Estado consultado em 23/11/2026
 
-## Situação observada na base principal
+| Indicador | Base oficial | Homologação separada |
+| --- | ---: | ---: |
+| Projetos | 46 | 46 |
+| Hashes | 80 | 5 |
+| Códigos habilitados | 60 | 5 |
+| Avaliações válidas | 8 | 8 |
+| Configuração `votacao_aberta` | TRUE | TRUE |
 
-| Item | Estado na consulta de 22/11/2026 |
-| --- | --- |
-| Projetos | 46, sendo 24 Mostra Nacional e 22 Mostra de Extensão |
-| Códigos | 10 habilitados, 20 desativados; somente hashes na planilha |
-| Avaliações | 1 linha válida confirmada |
-| Mínimo do ranking | 5 votos válidos por projeto |
-| Votação | **Fechada**: o valor observado não corresponde à string `true` exigida pelo backend |
+Na base oficial há outros **20 códigos desabilitados**. Somente usuários identificados com papel proprietário/editor possuem acesso direto à planilha oficial. A contagem de avaliações poderá aumentar, pois a votação está aberta.
 
-O formulário publicado foi aberto em dispositivo móvel pela equipe; houve confirmação de voto válido e rejeição de código inválido. **Isso não comprova** ainda bloqueio de duplicidade e concorrência diretamente no servidor público. Não mudar o estado da votação sem autorização de quem coordena o evento.
+## Operação normal
 
-## Ambiente separado de homologação
+- O participante abre o catálogo no Pages e escolhe um projeto.
+- O Web App valida o código com hash SHA-256 e verifica abertura de votação, projeto, notas, recibo e duplicidade.
+- `LockService` protege a sequência leitura–checagem–gravação. As avaliações armazenam hash, projeto, quatro notas, média, data e estado.
+- O ranking calcula a média após cinco votos válidos em cada projeto; modalidades permanecem separadas.
+- O aplicativo é público para participação sem login, **sem conceder acesso direto à planilha**.
 
-Há uma **segunda planilha privada**, com 46 projetos, cinco códigos exclusivos de teste e **nenhum voto de teste** até a consulta de 22/11/2026. A configuração dessa segunda planilha permite votação de teste. Um **segundo projeto Apps Script** foi montado e implantado pela responsável, mas o formulário de homologação apresentou dificuldade de acesso no navegador. Sua implantação e permissões ainda precisam ser validadas antes dos ensaios reais.
+## Conferir configurações sem alterar a votação
 
-**Nunca usar códigos da homologação no site oficial, nem dados reais dos participantes na planilha de teste.** Os identificadores e os códigos estão disponíveis somente para a equipe autorizada fora do GitHub.
+1. No editor do **Apps Script oficial**, conferir a implantação `/exec` e a versão publicada.
+2. Em **Implantar → Gerenciar implantações**, conferir `Executar como: Eu` e `Quem pode acessar: Qualquer pessoa`, conforme autorizado pela organização.
+3. Conferir **Configurações do projeto → Propriedades do script**, garantindo que `SPREADSHEET_ID` aponta à **base oficial**, sem copiar o identificador para mensagens, código ou documentação.
+4. Confirmar que funções administrativas de setup/emissão não foram expostas por wrappers temporários. Rotinas terminadas em `_` não são chamadas diretamente por `google.script.run`.
+5. Verificar recibos e ausência de duplicações sem gerar votos falsos. Usar exclusivamente a planilha de homologação para ensaios de stress.
+6. Registrar alterações de implantação (data, motivo e versão) e solicitar autorização específica para publicar uma nova versão.
 
-## Como configurar ou conferir uma implantação
+**Importante:** uma mudança no GitHub não implanta o Apps Script. Fazer merge não altera a planilha, mas uma nova publicação do frontend pode modificar a interface. Evitar atualizações durante a votação sem um plano de validação e autorização.
 
-1. Em um projeto Apps Script separado, adicionar `backend/Code.gs` como arquivo de script e criar os HTML `Client`, `Home`, `Ranking`, `Styles` e `Vote` com o conteúdo versionado no GitHub.
-2. Abrir **Configurações do projeto → Propriedades do script** e configurar `SPREADSHEET_ID` com o ID da **planilha daquele ambiente**, nunca misturando produção e homologação. Não escrever esse ID no GitHub.
-3. Confirmar a existência das quatro abas com os cabeçalhos esperados. A função `verificarIntegridadePlanilha_()` valida estrutura e 46=24+22; por terminar em `_`, pode não aparecer na seleção de execução direta. Se necessário, um wrapper administrativo temporário deve ser removido antes de implantar.
-4. `setupPlanilha_()` preserva abas já preenchidas, mas **não deve ser executada sem necessidade**. Não limpar ou recriar a base oficial para realizar testes.
-5. Usar **Implantar → Nova implantação → App da Web** ou **Gerenciar implantações → Nova versão**. Definir quem executa e quem pode acessar segundo o ambiente e as permissões institucionais. Para homologação privada, conferir a conta autorizada. Para acesso público, a revisão de segurança e autorização da equipe são obrigatórias.
-6. No frontend, o workflow `.github/workflows/pages.yml` define `VITE_GAS_APP_URL`, apontando ao **Web App público** de produção. Sua atualização exige um novo build/deploy aprovado do Pages. **Não apontar esse build público para o ambiente de homologação.**
+## Preparação de testes e revisão
 
-Uma nova versão no GitHub **não** atualiza automaticamente o código já implantado no Apps Script.
+- Não executar `setupPlanilha_()` em produção sem necessidade; não apagar, reordenar ou regravar abas com votos.
+- Reenvio da mesma requisição usa lógica de idempotência; par código/projeto duplicado é rejeitado.
+- Para concorrência: teste de simulação em `scripts/testar_concorrencia_simulada.mjs` e, quando possível, ensaio de múltiplas sessões **somente** na implantação de homologação.
+- Não publicar planilhas privadas, documentos de distribuição de códigos, dados pessoais, hashes individuais ou recibos.
+- A futura auditoria de acessibilidade foi adiada; a versão estável mantém a interface atualmente em operação.
 
-## Regras e cuidados de segurança
-
-- `registrarAvaliacao` rejeita votação fechada, código inválido/desabilitado, projeto inexistente, notas incorretas e repetição de um par código/projeto.
-- O servidor usa SHA-256 para validar o código, `LockService` para serializar gravações, recibo e releitura da linha gravada.
-- Uma requisição idêntica repetida retorna `ja_processada` sem registrar novo voto; o mesmo ID com dados diferentes é rejeitado.
-- Funções administrativas temporárias **não devem ficar expostas** no Web App. Funções com sufixo `_` não são chamadas diretamente pelo `google.script.run`; revisar também as funções públicas auxiliares antes do uso institucional.
-- Não colocar tokens em URLs, logs, README, issues, capturas públicas ou planilhas compartilhadas.
-- Manter a planilha principal privada; acesso do professor ao GitHub **não concede** acesso aos dados de votação.
-
-## Homologação pendente
-
-Antes de declarar o sistema totalmente homologado, confirmar **no Web App de testes**: envio com código válido e recibo, rejeição do segundo voto do mesmo código/projeto, aceitação em projeto diferente, ranking com cinco avaliações, acesso e desempenho em celulares reais, acessibilidade e concorrência. Registre resultados em [TESTES_E_QA.md](TESTES_E_QA.md).
+Links: [Status](STATUS_EXECUCAO.md), [QA](TESTES_E_QA.md), [Guia de release](GUIA_RELEASE_MAIN.md).
