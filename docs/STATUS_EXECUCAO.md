@@ -1,47 +1,39 @@
 # Status de execução — Universo IF Avalia
 
-**Atualizado em 22/11/2026. Estado: implementação funcional com homologação final pendente.** Este documento substitui os registros parciais de 12 e 13/11 que indicavam ausência de implantação.
+**Atualizado em 23/11/2026.** Site em operação; **homologação parcial com ressalvas**; branch estável preparada para revisão.
 
-| Etapa | Estado | Evidência |
+| Etapa | Situação em 23/11/2026 | Evidência |
 | --- | --- | --- |
-| G0 — Repositório e revisão | **OK** | Branch `feat/universo-if-avalia-mvp`; [PR #1 em rascunho](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/1), sem merge na `main` |
-| G1 — Catálogo | **OK** | 46 IDs únicos; 24 Nacional e 22 Extensão; catálogo validado no CI |
-| G2 — Interface e build | **OK automatizado** | TypeScript, Vitest e build aprovados; frontend público no [GitHub Pages](https://anaclaracunhasanthos-gif.github.io/aula12.11/) |
-| G3 — Planilha principal | **OK estrutural** | Abas existentes, 46 projetos, 10 códigos ativos, 20 desativados, 1 avaliação válida |
-| G4 — Integração e votação | **PARCIAL** | Formulário oficial aberto em celular; 1 voto válido registrado; rejeição de código inválido confirmada. Duplicidade real e concorrência ainda pendentes |
-| G5 — Publicação | **OK** | [Build + deploy Pages em 14/11/2026](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43631300598); não houve merge |
-| G6 — Homologação de ponta a ponta | **PENDENTE** | Formulário de teste implantado, mas acesso ainda não confirmado; ranking com 5 votos, browsers/dispositivos, acessibilidade e carga pendentes |
-| G7 — Testes automatizados atuais | **OK** | [14 testes aprovados em 22/11/2026](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45041566549), incluindo 4 testes isolados do backend |
+| G0 — Repositório | **Em revisão** | `main` somente com README; branch `release/universo-if-avalia-v1-estavel` criada. PR de acessibilidade futura separado |
+| G1 — Catálogo | **Aprovado** | 46 IDs: 24 Nacional + 22 Extensão; busca, filtros, detalhes |
+| G2 — Frontend e build | **Aprovado** | TypeScript, testes Vitest, build e GitHub Pages publicado |
+| G3 — Dados oficiais | **Conferido** | 46 projetos, 80 hashes (60 ativos, 20 inativos), 8 avaliações válidas no retrato |
+| G4 — Votação oficial | **Aberta e recebendo avaliações** | Configuração `TRUE`; oito avaliações reais observadas; recibos únicos na amostra |
+| G5 — Ranking | **Aprovado nos testes** | Separação por modalidade, amostra mínima de cinco, retorno ao catálogo |
+| G6 — Homologação real separada | **Parcial** | Cinco códigos de teste e oito votos de homologação; faltam stress real e auditoria completa |
+| G7 — Testes da versão estável | **Aprovado** | 16 Vitest + verificação de concorrência simulada com 24 workers; CI/build |
+| G8 — Acessibilidade futura | **Adiada** | Melhorias já desenvolvidas em `feat/universo-if-avalia-mvp`, sem incluir na release |
+| G9 — Integração `main` | **Não realizada** | Preparar revisão e pedir aprovação explícita antes de fazer merge |
 
-## Estado atual das planilhas
+## Produção
 
-**Produção** (dados privados; IDs e links não versionados):
-- `Projetos`: 46 projetos, 24 da Mostra Nacional e 22 da Mostra de Extensão.
-- `Codigos`: 10 hashes habilitados e 20 desabilitados.
-- `Avaliacoes`: 1 avaliação válida, mantida sem alteração durante as verificações.
-- `Configuracao`: **votação fechada no momento da consulta**. Não há autorização implícita para reabrir.
+- O frontend no [GitHub Pages](https://anaclaracunhasanthos-gif.github.io/aula12.11/) foi confirmado por teste manual em celular e notebook.
+- O [Web App do Apps Script](https://script.google.com/macros/s/AKfycbz4LOGOx52e0ErthiXDlKXCmk0FsNLPCGYKmrBDS4L-hVAs6GjaVxAZylIdNf7EZs8lKw/exec) está em uso para formulários e ranking.
+- A planilha oficial continua **privada**, acessível apenas a usuários autorizados; oito avaliações válidas na última consulta. Essa quantidade pode aumentar.
+- A abertura de votação foi autorizada pela equipe **conforme informado pela responsável**. Nenhum ajuste de abertura/fechamento faz parte deste processo de organização do GitHub.
 
-**Homologação separada**:
-- Estrutura de 46 projetos replicada, sem votos de produção.
-- Cinco códigos próprios de teste habilitados; **zero votos de teste** no instante da consulta.
-- Configuração de teste permite submissões, condicionadas ao funcionamento do Web App de homologação.
-- A responsável implantou a versão de teste no Apps Script, mas houve erro de acesso ao link; a operação do formulário publicado de homologação não está comprovada.
+## Homologação
 
-## O que já foi testado
+- Planilha e Apps Script de testes distintos da produção, com 5 códigos habilitados e 8 avaliações de teste.
+- Validados em ambiente de homologação: voto aceito, duplicado bloqueado, código em outro projeto permitido, ranking após cinco votos, verificação de erros e configurações de abertura.
+- A concorrência simulada já passou; **a simultaneidade rigorosa no Google real não foi comprovada**.
+- Leitor de tela, contraste em todas as telas e foco foram **adiados** e não impedem documentar a versão atual com ressalvas.
+- Revisão administrativa da versão efetivamente implantada no Apps Script ainda pendente.
 
-1. O código do backend foi executado em ambiente isolado com Google Sheets fictício: primeiro voto válido, rejeição de duplicado, mesmo código em projeto diferente e retentativa idempotente.
-2. O GitHub Actions aprovou **14 testes**, o typecheck, a validação do catálogo e o build.
-3. A equipe abriu o formulário oficial em um celular e obteve a mensagem **"Código inválido ou desabilitado"** ao tentar um código fictício.
-4. Uma avaliação real com recibo já tinha sido registrada antes e foi confirmada na planilha privada.
+## Controle de versões
 
-## O que ainda não está comprovado
+- A release estável foi derivada do commit anterior às correções de acessibilidade (`5e6c8e4b6c52`), acrescentando **apenas documentação e teste de concorrência isolado**, sem alterar o frontend ou o backend que os participantes usam.
+- O site oficial não foi atualizado por esta etapa. O fluxo Pages não publica automaticamente alterações ao preparar um PR para `main`.
+- Antes de integrar a versão estável à `main`, consultar [Guia de release](GUIA_RELEASE_MAIN.md) e [Relatório consolidado](RELATORIO_HOMOLOGACAO_ETAPA.md).
 
-- Duplicidade, idempotência e concorrência em **implantação Apps Script real** usando dados de homologação.
-- Ranking com cinco votos válidos por projeto no Web App de homologação.
-- Acesso autorizado e navegação no Web App de homologação; eventual teste sem login no app oficial.
-- Teste abrangente em celulares diferentes, teclado, contraste, leitores de tela e mensagens de erro.
-- Revisão final de segurança e aceite da equipe para uso institucional.
-
-**Observação de publicação:** o Pages foi implantado em 14/11/2026 com o commit do workflow de então. Houve mudanças posteriores na branch, inclusive em arquivos HTML do Apps Script. Elas **não se tornam automaticamente** a versão em execução no Apps Script ou Pages.
-
-**Controle de mudanças:** não efetuar merge na `main`, reabrir votação nem publicar uma nova versão por iniciativa própria. Registre evidências dos ensaios em [TESTES_E_QA.md](TESTES_E_QA.md). Preserve os dados privados fora do repositório.
+**Não misturar dados de produção/homologação, não expor códigos ou recibos e não executar merge sem autorização expressa.**
