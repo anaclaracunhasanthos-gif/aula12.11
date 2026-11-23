@@ -29,7 +29,7 @@
 - [x] Documentar o estado atual do projeto e as evidências de homologação parcial.
 - [x] Manter valores privados fora do repositório.
 - [x] Incluir teste simulado de concorrência sem gravar dados reais.
-- [ ] Conferir pipeline da versão estável (**CI, build e teste de concorrência**) no Pull Request.
+- [x] Conferir pipeline da versão estável (**16 Vitest, build e simulação de concorrência**): [CI aprovada](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45213083103).
 - [ ] Fazer revisão por pessoa autorizada.
 - [ ] Verificar a identidade entre a revisão planejada e a implantação oficial do Apps Script (sem publicar automaticamente).
 - [ ] Autorizar explicitamente eventual merge para `main`; caso aprovado, registrar o SHA exato da integração.
@@ -38,7 +38,7 @@
 
 ## Fluxo seguro proposto
 
-1. Revisar o Pull Request da branch `release/universo-if-avalia-v1-estavel` **para `main`**, mantendo o PR #1 de desenvolvimento separado.
+1. Revisar o [Pull Request #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2) da branch `release/universo-if-avalia-v1-estavel` **para `main`**, mantendo o PR #1 de desenvolvimento separado.
 2. Confirmar que a PR está aprovada e a CI passou; ler os arquivos alterados.
 3. Solicitar aprovação explícita para o merge. Não executar merge por inferência de pedidos de “organização” ou “documentação”.
 4. Depois da aprovação, integrar uma versão estável à `main`, sem disparar implantação do Google Apps Script.
