@@ -47,9 +47,26 @@ function ambienteDeHomologacao() {
     ]
   };
 
+  const eventosLock: string[] = [];
+  let lockAtivo = false;
+  const conferirLock = () => {
+    if (!lockAtivo) throw new Error('Acesso à planilha fora do LockService');
+  };
+
   const sandbox: Record<string, unknown> = {
     LockService: {
-      getScriptLock: () => ({ waitLock: () => undefined, releaseLock: () => undefined })
+      getScriptLock: () => ({
+        waitLock: () => {
+          if (lockAtivo) throw new Error('Lock já ocupado');
+          lockAtivo = true;
+          eventosLock.push('adquirido');
+        },
+        releaseLock: () => {
+          conferirLock();
+          eventosLock.push('liberado');
+          lockAtivo = false;
+        }
+      })
     },
     PropertiesService: {
       getScriptProperties: () => ({ getProperty: () => 'planilha-ficticia' })
@@ -66,8 +83,18 @@ function ambienteDeHomologacao() {
           const linhas = dados[name];
           if (!linhas) throw new Error('Aba ausente: ' + name);
           return {
-            getDataRange: () => ({ getValues: () => linhas.map(row => [...row]) }),
-            appendRow: (row: Valor[]) => { linhas.push([...row]); },
+            getDataRange: () => ({
+              getValues: () => {
+                conferirLock();
+                eventosLock.push('leitura');
+                return linhas.map(row => [...row]);
+              }
+            }),
+            appendRow: (row: Valor[]) => {
+              conferirLock();
+              eventosLock.push('gravação');
+              linhas.push([...row]);
+            },
             getLastRow: () => linhas.length,
             getRange: (row: number, col: number, height = 1, width = 1) => ({
               getValues: () => linhas.slice(row - 1, row - 1 + height)
@@ -76,7 +103,10 @@ function ambienteDeHomologacao() {
           };
         }
       }),
-      flush: () => undefined
+      flush: () => {
+        conferirLock();
+        eventosLock.push('flush');
+      }
     }
   };
   const source = readFileSync(new URL('../backend/Code.gs', import.meta.url), 'utf8');
@@ -86,7 +116,12 @@ function ambienteDeHomologacao() {
   const api = sandbox.__homologacao as {
     registrarAvaliacao: (voto: Voto) => Resposta;
   };
-  return { registrar: api.registrarAvaliacao, avaliacoes: dados.Avaliacoes };
+  return {
+    registrar: api.registrarAvaliacao,
+    avaliacoes: dados.Avaliacoes,
+    eventosLock,
+    lockEstaAtivo: () => lockAtivo
+  };
 }
 
 function voto(id_requisicao: string, id_projeto = 'NAC-001'): Voto {
@@ -126,4 +161,25 @@ describe('Homologacao do backend Google Apps Script em ambiente isolado', () => 
     expect(env.registrar(entrada).status).toBe('ja_processada');
     expect(env.avaliacoes).toHaveLength(2);
   });
+  it('mantém leitura e gravação protegidas pelo lock', () => {
+    const env = ambienteDeHomologacao();
+    env.registrar(voto('pedido-homologacao-0001'));
+    const eventos = env.eventosLock;
+    expect(eventos[0]).toBe('adquirido');
+    expect(eventos).toContain('gravação');
+    expect(eventos).toContain('flush');
+    expect(eventos.at(-1)).toBe('liberado');
+    expect(env.lockEstaAtivo()).toBe(false);
+  });
+
+  it('libera o lock quando uma tentativa duplicada é rejeitada', () => {
+    const env = ambienteDeHomologacao();
+    env.registrar(voto('pedido-homologacao-0001'));
+    expect(() => env.registrar(voto('pedido-homologacao-0002')))
+      .toThrow('Este código já avaliou este projeto.');
+    expect(env.lockEstaAtivo()).toBe(false);
+    expect(env.eventosLock.at(-1)).toBe('liberado');
+    expect(env.avaliacoes).toHaveLength(2);
+  });
+
 });
