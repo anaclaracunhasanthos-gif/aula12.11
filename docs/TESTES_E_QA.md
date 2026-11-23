@@ -38,7 +38,7 @@ Produção: 80 hashes, sendo 60 habilitados e 20 desabilitados; votação aberta
 1. Concorrência real e carga em Web App de homologação, sem afetar o site oficial.
 2. Revisão integral da configuração, permissões e versão publicada do Apps Script.
 3. Acessibilidade manual e melhorias de contraste, semântica e área de toque: **adiadas para outra versão**. A branch `feat/universo-if-avalia-mvp` já tem melhorias e cinco testes estáticos adicionais; essa versão obteve 21 testes Vitest [aprovados no CI](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45207752211), **mas não será integrada à release estável agora**.
-4. Revisão e aprovação de PR separado antes de merge na `main`.
+4. **Concluído:** a versão estável foi integrada à `main` em 23/11/2026 pelo [PR #2](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/2). O PR #1 permanece separado para acessibilidade futura.
 
 Referências: [Relatório consolidado](RELATORIO_HOMOLOGACAO_ETAPA.md), [Status](STATUS_EXECUCAO.md), [Guia de release](GUIA_RELEASE_MAIN.md).
 
