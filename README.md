@@ -5,6 +5,7 @@
 ## Acesso rápido
 
 - **[Abrir o site (Web e Mobile)](https://anaclaracunhasanthos-gif.github.io/aula12.11/)**
+- [Abrir o Google Apps Script publicado (formulários e ranking)](https://script.google.com/macros/s/AKfycbz4LOGOx52e0ErthiXDlKXCmk0FsNLPCGYKmrBDS4L-hVAs6GjaVxAZylIdNf7EZs8lKw/exec) — acesso e envio sujeitos às permissões e à configuração da votação
 - [Código-fonte do projeto na branch de desenvolvimento](https://github.com/anaclaracunhasanthos-gif/aula12.11/tree/feat/universo-if-avalia-mvp)
 - [Código do Google Apps Script (backend)](backend/Code.gs) e [telas do formulário](backend/)
 - [Pull Request #1 para revisão — rascunho](https://github.com/anaclaracunhasanthos-gif/aula12.11/pull/1)
