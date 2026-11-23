@@ -1,51 +1,45 @@
-# Testes e homologação — Universo IF Avalia
+# Testes e QA — Universo IF Avalia
 
-**Atualização: 22/11/2026.** Situação geral: **testes automatizados aprovados; homologação real ainda parcial**.
+**Atualizado em 23/11/2026.** Homologação **parcial, com ressalvas**. Esta documentação se refere à versão estável **sem as futuras alterações de acessibilidade**.
 
-## Evidências verificadas
+## Resumo dos testes
 
-| Item | Resultado | Origem |
+| Teste | Resultado | Evidência |
 | --- | --- | --- |
-| Validação do catálogo 46 = 24 + 22 | **PASS** | GitHub Actions |
-| TypeScript e compilação de produção | **PASS** | GitHub Actions |
-| Testes de catálogo, notas, regras e ranking | **10 PASS** | Vitest (`src/domain/*.test.ts`) |
-| Testes de backend usando o próprio `Code.gs` em planilha fictícia | **4 PASS** | Vitest (`tests/homologacao_backend.test.ts`) |
-| Total automatizado | **14 PASS** | [Execução do CI](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45041566549) |
-| Site publicado no GitHub Pages | **PASS na publicação** | [Workflow Pages em 14/11/2026](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/43631300598) |
-| Formulário oficial aberto em celular | **CONFIRMADO pela equipe** | Teste manual relatado na conversa |
-| Código fictício inválido enviado no formulário oficial | **REJEITADO como esperado** | Mensagem observada: "Código inválido ou desabilitado" |
-| Registro válido na base oficial | **CONFIRMADO** | Uma linha `VALIDA` verificada por leitura da planilha |
-| Voto duplicado no Web App real de homologação | **PENDENTE** | Ainda não executado |
-| Ranking real com cinco votos no ambiente separado | **PENDENTE** | Ainda não executado |
-| Testes de concorrência e acessibilidade | **PENDENTE** | Ainda não comprovados |
+| Catálogo 46 projetos (24 + 22) | **PASS** | Validação de estrutura no CI |
+| Testes de notas, filtros, ranking e regras | **PASS** | 10 testes Vitest do frontend/domínio |
+| Testes isolados do backend `Code.gs` | **PASS** | 6 testes Vitest com planilha em memória |
+| Total automatizado da versão estável | **16 PASS** | Vitest, TypeScript, validação e build |
+| Concorrência com workers simulados (24 tentativas) | **PASS limitado** | 2 rodadas, 2 votos aceitos (1 por rodada) e 22 duplicatas rejeitadas |
+| Navegação catálogo → voto → catálogo e catálogo → ranking → catálogo | **PASS manual** | Responsável confirmou na implantação oficial |
+| Site em celular físico e notebook | **PASS manual** | Responsável confirmou |
+| Votos reais e recibos únicos na produção | **PASS na amostra** | 8 avaliações oficiais `VALIDA` observadas em 23/11 |
+| Formulário, códigos e ranking na homologação | **PASS manual** | 8 avaliações na base separada, incluindo amostra de 5 |
+| Propriedades internas e revisão independente da implantação oficial | **PARCIAL** | Fonte revisada; implantação administrativa não auditada integralmente |
+| Concorrência rigorosa simultânea no Apps Script real | **PENDENTE** | Simulação não cobre serviços Google reais |
+| Acessibilidade manual em leitor de tela, teclado e zoom | **ADIADA** | Responsável optou por manter interface estável |
 
-A execução automatizada aprovada está na branch `feat/universo-if-avalia-mvp`. O teste isolado usa uma **planilha simulada em memória** e um código fictício, **não chama a implantação pública** e não altera avaliações reais.
+## Concorrência isolada, sem votos reais
 
-## Roteiro de homologação final (ambiente separado)
+`node scripts/testar_concorrencia_simulada.mjs` executa o `backend/Code.gs` com `worker_threads` e serviços Google simulados. Em duas rodadas independentes de 12 pedidos praticamente simultâneos para o mesmo código fictício e mesmo projeto, somente um é aceito em cada rodada. Os demais 22 são rejeitados; locks simulados são liberados. **Não é teste do servidor Google**. Não altera planilhas nem usa tokens oficiais.
 
-Use a **planilha de homologação privada**, com cinco códigos exclusivos, em um **Apps Script de teste**. Na última consulta, esse ambiente possuía **zero avaliações**. Não usar os códigos oficiais e não compartilhar o endereço ou os tokens na documentação pública.
+## Homologação manual já observada
 
-1. **Acesso:** confirmar que o Web App de homologação abre com a conta autorizada, apresenta o projeto correto e os quatro critérios. A equipe relatou um erro do Google ao abrir o link; investigar a conta e as permissões sem alterar a implantação oficial.
-2. **Primeiro voto válido:** escolher projeto de teste, informar um dos cinco códigos reservados e notas 4, 5, 4, 3. A nota esperada é **4,15**. Guardar o recibo em registro **privado**.
-3. **Persistência:** conferir exatamente uma linha nova na aba `Avaliacoes`, com hash do código, projeto, quatro notas, média, data e estado `VALIDA`; o código em texto puro não deve aparecer.
-4. **Duplicidade:** com o **mesmo código e projeto**, enviar outra requisição. Resultado esperado: **"Este código já avaliou este projeto."**; a contagem de votos não aumenta.
-5. **Projetos diferentes:** com o mesmo código, enviar para outro projeto. Resultado esperado: voto aceito, sem liberar uma segunda avaliação no projeto anterior.
-6. **Idempotência e concorrência:** conferir reenvio da mesma requisição e tentativas simultâneas para o mesmo par código/projeto; a contagem final deve permanecer uma avaliação válida por par. Preferir ambiente de testes, não produção.
-7. **Ranking:** avaliar um único projeto com cinco códigos distintos no ambiente de homologação. Antes de cinco, média e posição devem ficar ocultas; com cinco, verificar média ponderada, contagem e ordem. Confirmar a separação entre Mostra Nacional e Mostra de Extensão.
-8. **Erros:** testar código desabilitado/inválido, projeto desconhecido, notas ausentes e valores fora de 1 a 5; conferir mensagens sem registros inesperados.
-9. **Mobile e acessibilidade:** conferir pelo menos um celular Android e, se possível, iPhone; largura 320, 375, 768 e 1280 px, foco via teclado, contraste, tamanho de toque, leitura de mensagens e navegação por leitor de tela.
-10. **Revisão final:** validar permissões, manter funções administrativas privadas, preservar planilhas e códigos, registrar evidências, conferir implantação atualizada e obter aceite da equipe.
+Na planilha separada foram registrados oito votos de teste, com recibos distintos e sem par código/projeto duplicado. Foram verificados: aceitar um voto válido, rejeitar tentativa duplicada, aceitar o mesmo código em projeto distinto, rejeitar código inválido, respeitar abertura e fechamento da votação e só publicar posição no ranking após cinco avaliações.
 
-## Produção: não misturar com testes
+Na produção, a última leitura encontrou **oito votos válidos e oito pares distintos de código/projeto**. A responsável confirmou acesso em celular físico e notebook, formulário e ranking, retorno ao catálogo, e informou autorização da equipe para a votação. Isso não comprova todas as situações de stress.
 
-A base oficial mantém uma avaliação válida, **dez códigos habilitados** e **vinte desabilitados**. A votação estava **fechada na leitura de 22/11/2026**. Esses dados podem mudar depois; revalidar antes da apresentação. Não abrir votação ou inserir votos fictícios na produção para cumprir roteiro.
+## Códigos, privacidade e ambientes
 
-A confirmação de funcionamento manual no servidor **não substitui** a bateria de testes da homologação separada. Não apagar votos reais e não divulgar dados de participantes.
+Produção: 80 hashes, sendo 60 habilitados e 20 desabilitados; votação aberta na consulta de 23/11. Homologação: 5 hashes próprios e 8 votos de teste. **Não misturar códigos ou avaliações entre ambientes**, não divulgar os tokens e não gerar votos fictícios em produção.
 
-## Limitações e acompanhamento
+## Pendências e decisão
 
-- Um navegador simulado com viewport móvel não substitui teste em aparelho físico.
-- O frontend publicado pelo Pages e o código atualmente na branch podem corresponder a commits diferentes.
-- Uma atualização em `backend/` não altera automaticamente um Apps Script já implantado no Google.
-- O acesso do professor ao repositório não fornece acesso à planilha privada.
-- **Não declarar homologação completa** antes das evidências acima. Ver também [STATUS_EXECUCAO.md](STATUS_EXECUCAO.md) e [CONFIGURAR_GOOGLE.md](CONFIGURAR_GOOGLE.md).
+1. Concorrência real e carga em Web App de homologação, sem afetar o site oficial.
+2. Revisão integral da configuração, permissões e versão publicada do Apps Script.
+3. Acessibilidade manual e melhorias de contraste, semântica e área de toque: **adiadas para outra versão**. A branch `feat/universo-if-avalia-mvp` já tem melhorias e cinco testes estáticos adicionais; essa versão obteve 21 testes Vitest [aprovados no CI](https://github.com/anaclaracunhasanthos-gif/aula12.11/actions/runs/45207752211), **mas não será integrada à release estável agora**.
+4. Revisão e aprovação de PR separado antes de merge na `main`.
+
+Referências: [Relatório consolidado](RELATORIO_HOMOLOGACAO_ETAPA.md), [Status](STATUS_EXECUCAO.md), [Guia de release](GUIA_RELEASE_MAIN.md).
+
+**Não declarar homologação 100% concluída.** A versão atual pode permanecer em operação educativa controlada sob acompanhamento da equipe.
