@@ -92,7 +92,9 @@
       code.value='';review.hidden=true;progress.hidden=true;field.hidden=true;refresh();
     }).withFailureHandler(err=>{
       state.sending=false;submit.textContent='Confirmar avaliação';refresh();
-      message.className='error';message.textContent=err.message||'Não foi possível confirmar. Verifique sua conexão antes de tentar novamente.';
+      message.className='error';
+      const detalhe=String(err&&err.message||'');
+      message.textContent=detalhe.includes('já avaliou este projeto')?'Este código já foi utilizado para avaliar este projeto. Não é possível enviar uma segunda avaliação com o mesmo código.':(detalhe||'Não foi possível confirmar. Verifique sua conexão antes de tentar novamente.');
     }).submitVote({codigo,id_projeto:id,notas,id_requisicao:state.requestId});
   });
   refresh();
