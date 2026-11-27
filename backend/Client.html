@@ -36,7 +36,7 @@
     }
     const c=criteria[state.step];
     el('#step-label').textContent='Etapa '+(state.step+1)+' de 4';
-    el('#progress-percent').textContent=((state.step+1)*25)+'%';
+    el('#progress-percent').textContent='Pergunta '+(state.step+1);
     el('.progress-track').setAttribute('aria-valuenow',String((state.step+1)*25));
     el('#progress-fill').style.width=((state.step+1)*25)+'%';
     el('#criterion-name').textContent=c.name;
@@ -55,15 +55,16 @@
   };
   google.script.run.withSuccessHandler(p=>{
     if(!p||!p.id||String(p.id)!==String(id)){
-      el('#project').textContent='Não foi possível confirmar o projeto selecionado.';
+      el('#project-name').textContent='Não foi possível confirmar o projeto selecionado.';
       showError('Volte ao catálogo e selecione um projeto válido.');
       return;
     }
     state.project=p;
-    el('#project').textContent=p.titulo+' · '+p.modalidade+' · '+p.id;
+    el('#project-name').textContent=p.titulo;
+    el('#project-info').textContent=p.modalidade+' · '+p.id+(p.area?' · '+p.area:'');
     refresh();
   }).withFailureHandler(e=>{
-    el('#project').textContent='Erro ao carregar projeto.';
+    el('#project-name').textContent='Erro ao carregar projeto.';
     showError(e.message||'Não foi possível carregar este projeto.');
   }).getProjectForUi(id);
   next.addEventListener('click',()=>{
