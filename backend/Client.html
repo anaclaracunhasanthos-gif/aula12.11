@@ -1,9 +1,9 @@
 <script>const qs=s=>document.querySelector(s);function bootVote(id){
   const criteria=[
-    {key:'criatividade',name:'Criatividade e inovação',weight:'30%',help:'O projeto demonstra criatividade e inovação?'},
-    {key:'clareza',name:'Clareza da apresentação',weight:'30%',help:'A apresentação do projeto foi clara e de fácil compreensão?'},
-    {key:'relevancia',name:'Relevância e impacto',weight:'25%',help:'O projeto é relevante e pode causar impacto positivo?'},
-    {key:'demonstracao',name:'Demonstração e resultados',weight:'15%',help:'O projeto apresentou demonstrações e resultados claros?'}
+    {key:'criatividade',name:'Criatividade e inovação',help:'O projeto demonstra criatividade e inovação?'},
+    {key:'clareza',name:'Clareza da apresentação',help:'A apresentação do projeto foi clara e de fácil compreensão?'},
+    {key:'relevancia',name:'Relevância e impacto',help:'O projeto é relevante e pode causar impacto positivo?'},
+    {key:'demonstracao',name:'Demonstração e resultados',help:'O projeto apresentou demonstrações e resultados claros?'}
   ];
   const descriptions=['','Muito insuficiente','Insuficiente','Adequado','Muito bom','Excelente'];
   const state={step:0,ratings:{},project:null,sending:false,completed:false,requestId:null};
@@ -27,7 +27,7 @@
       el('#review-notes').replaceChildren();
       criteria.forEach(c=>{
         const row=document.createElement('div');row.className='review-row';
-        const title=document.createElement('span');title.textContent=c.name+' ('+c.weight+')';
+        const title=document.createElement('span');title.textContent=c.name;
         const note=document.createElement('strong');note.textContent=state.ratings[c.key]+' / 5';
         row.append(title,note);el('#review-notes').append(row);
       });
@@ -39,7 +39,7 @@
     el('#progress-percent').textContent=((state.step+1)*25)+'%';
     el('.progress-track').setAttribute('aria-valuenow',String((state.step+1)*25));
     el('#progress-fill').style.width=((state.step+1)*25)+'%';
-    el('#criterion-name').textContent=c.name+' · '+c.weight;
+    el('#criterion-name').textContent=c.name;
     el('#criterion-help').textContent=c.help;
     const container=el('#criteria');container.replaceChildren();
     for(let n=1;n<=5;n++){
