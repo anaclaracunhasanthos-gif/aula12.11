@@ -1,1 +1,98 @@
-<script>const qs=s=>document.querySelector(s);function bootVote(id){google.script.run.withSuccessHandler(p=>{qs('#project').textContent=p.titulo+' · '+p.modalidade;}).withFailureHandler(e=>qs('#project').textContent=e.message).getProjectForUi(id);const labels=[['criatividade','Criatividade e inovação','30%'],['clareza','Clareza da apresentação','30%'],['relevancia','Relevância e impacto','25%'],['demonstracao','Demonstração e resultados','15%']];qs('#criteria').innerHTML=labels.map(([k,l,w])=>`<div class="criterion"><strong>${l} (${w})</strong><div class="options">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="${k}" value="${n}" required>${n}</label>`).join('')}</div></div>`).join('');qs('#vote').addEventListener('submit',e=>{e.preventDefault();const notas={};labels.forEach(([k])=>notas[k]=Number(qs(`input[name="${k}"]:checked`)?.value));const codigo=qs('#code').value.trim();const id_requisicao=(window.__pedidoVotoId || (window.__pedidoVotoId=crypto.randomUUID()));qs('#message').textContent='Enviando…';google.script.run.withSuccessHandler(r=>{qs('#message').className='success';qs('#message').textContent=`Avaliação recebida. Recibo: ${r.id_requisicao} · Nota: ${r.nota.toFixed(2)}`;window.__pedidoVotoId=null;qs('#vote').reset();}).withFailureHandler(err=>{qs('#message').className='error';qs('#message').textContent=err.message;}).submitVote({codigo,id_projeto:id,notas,id_requisicao});});}function bootRanking(){const requested=new URLSearchParams(window.location.search).get('modalidade');if(['Mostra Nacional','Mostra de Extensão'].includes(requested))qs('#modality').value=requested;const load=()=>{qs('#results').textContent='Carregando…';google.script.run.withSuccessHandler(rows=>{qs('#results').innerHTML=rows.map(r=>`<div class="rank"><strong>${r.posicao?'#'+r.posicao:'Aguardando amostra mínima'} · ${escapeHtml(r.titulo)}</strong><small>${r.total} avaliações · Média ponderada: ${r.posicao?r.media.toFixed(2).replace('.',','):'—'}</small>${r.medias_criterios?`<small>Critérios — Criatividade ${r.medias_criterios.criatividade.toFixed(2)} · Clareza ${r.medias_criterios.clareza.toFixed(2)} · Relevância ${r.medias_criterios.relevancia.toFixed(2)} · Demonstração ${r.medias_criterios.demonstracao.toFixed(2)}</small>`:''}<small>Atualizado em ${new Date(r.atualizado_em).toLocaleString('pt-BR')}</small></div>`).join('');}).withFailureHandler(e=>qs('#results').textContent=e.message).getRankingForUi(qs('#modality').value);};qs('#modality').addEventListener('change',load);load();}function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}</script>
+<script>const qs=s=>document.querySelector(s);function bootVote(id){
+  const criteria=[
+    {key:'criatividade',name:'Criatividade e inovação',weight:'30%',help:'O projeto apresenta ideias originais ou soluções inovadoras?'},
+    {key:'clareza',name:'Clareza da apresentação',weight:'30%',help:'A apresentação é clara, organizada e fácil de compreender?'},
+    {key:'relevancia',name:'Relevância e impacto',weight:'25%',help:'O projeto apresenta contribuições relevantes e possíveis benefícios?'},
+    {key:'demonstracao',name:'Demonstração e resultados',weight:'15%',help:'A equipe demonstra o trabalho e explica seus resultados?'}
+  ];
+  const descriptions=['','Muito insuficiente','Insuficiente','Adequado','Muito bom','Excelente'];
+  const state={step:0,ratings:{},project:null,sending:false,completed:false,requestId:null};
+  const el=s=>document.querySelector(s);
+  const progress=el('#step-progress'),field=el('#step-fieldset'),review=el('#review');
+  const prev=el('#prev-step'),next=el('#next-step'),submit=el('#submit-vote'),code=el('#code'),message=el('#message'),error=el('#step-error');
+  const showError=text=>{error.textContent=text;error.hidden=!text;};
+  const refresh=()=>{
+    const isReview=state.step===4;
+    field.hidden=isReview;review.hidden=!isReview;
+    progress.hidden=isReview;
+    prev.hidden=state.step===0||state.completed;
+    next.hidden=isReview||state.completed;
+    submit.hidden=!isReview||state.completed;
+    next.disabled=state.sending||!state.project;
+    prev.disabled=state.sending;
+    submit.disabled=state.sending||!state.project;
+    if(state.completed)return;
+    if(isReview){
+      el('#review-project').textContent=state.project.titulo+' · '+state.project.modalidade+' · '+state.project.id;
+      el('#review-notes').replaceChildren();
+      criteria.forEach(c=>{
+        const row=document.createElement('div');row.className='review-row';
+        const title=document.createElement('span');title.textContent=c.name+' ('+c.weight+')';
+        const note=document.createElement('strong');note.textContent=state.ratings[c.key]+' / 5';
+        row.append(title,note);el('#review-notes').append(row);
+      });
+      code.focus();
+      return;
+    }
+    const c=criteria[state.step];
+    el('#step-label').textContent='Etapa '+(state.step+1)+' de 4';
+    el('#progress-percent').textContent=((state.step+1)*25)+'%';
+    el('.progress-track').setAttribute('aria-valuenow',String((state.step+1)*25));
+    el('#progress-fill').style.width=((state.step+1)*25)+'%';
+    el('#criterion-name').textContent=c.name+' · '+c.weight;
+    el('#criterion-help').textContent=c.help;
+    const container=el('#criteria');container.replaceChildren();
+    for(let n=1;n<=5;n++){
+      const label=document.createElement('label');label.className='rating-choice';
+      const input=document.createElement('input');input.type='radio';input.name=c.key;input.value=String(n);
+      input.checked=state.ratings[c.key]===n;
+      input.addEventListener('change',()=>{state.ratings[c.key]=n;showError('');refresh();});
+      const digit=document.createElement('strong');digit.textContent=String(n);
+      const description=document.createElement('span');description.textContent=descriptions[n];
+      label.append(input,digit,description);container.append(label);
+    }
+    next.textContent=state.step===3?'Revisar notas →':'Próximo →';
+  };
+  google.script.run.withSuccessHandler(p=>{
+    if(!p||!p.id||String(p.id)!==String(id)){
+      el('#project').textContent='Não foi possível confirmar o projeto selecionado.';
+      showError('Volte ao catálogo e selecione um projeto válido.');
+      return;
+    }
+    state.project=p;
+    el('#project').textContent=p.titulo+' · '+p.modalidade+' · '+p.id;
+    refresh();
+  }).withFailureHandler(e=>{
+    el('#project').textContent='Erro ao carregar projeto.';
+    showError(e.message||'Não foi possível carregar este projeto.');
+  }).getProjectForUi(id);
+  next.addEventListener('click',()=>{
+    const c=criteria[state.step];
+    if(!Number.isInteger(state.ratings[c.key])||state.ratings[c.key]<1||state.ratings[c.key]>5){
+      showError('Selecione uma nota de 1 a 5 para continuar.');return;
+    }
+    showError('');state.step++;refresh();
+  });
+  prev.addEventListener('click',()=>{if(state.step>0&&!state.sending){state.step--;showError('');refresh();}});
+  el('#vote').addEventListener('submit',e=>{
+    e.preventDefault();
+    if(state.sending||state.completed||state.step!==4||!state.project)return;
+    if(criteria.some(c=>!Number.isInteger(state.ratings[c.key])||state.ratings[c.key]<1||state.ratings[c.key]>5)){
+      showError('Todas as quatro notas precisam ser preenchidas.');state.step=0;refresh();return;
+    }
+    const codigo=code.value.trim();
+    if(!codigo){showError('Informe seu código de avaliação antes de confirmar.');code.focus();return;}
+    showError('');state.sending=true;submit.textContent='Enviando…';refresh();message.className='';message.textContent='Enviando avaliação…';
+    if(!state.requestId)state.requestId=window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2);
+    const notas={};criteria.forEach(c=>notas[c.key]=state.ratings[c.key]);
+    google.script.run.withSuccessHandler(r=>{
+      state.sending=false;state.completed=true;state.requestId=null;
+      message.className='success';message.textContent='Avaliação recebida. Recibo: '+r.id_requisicao+' · Nota: '+Number(r.nota).toFixed(2).replace('.',',');
+      code.value='';review.hidden=true;progress.hidden=true;field.hidden=true;refresh();
+    }).withFailureHandler(err=>{
+      state.sending=false;submit.textContent='Confirmar avaliação';refresh();
+      message.className='error';message.textContent=err.message||'Não foi possível confirmar. Verifique sua conexão antes de tentar novamente.';
+    }).submitVote({codigo,id_projeto:id,notas,id_requisicao:state.requestId});
+  });
+  refresh();
+}function bootRanking(){const requested=new URLSearchParams(window.location.search).get('modalidade');if(['Mostra Nacional','Mostra de Extensão'].includes(requested))qs('#modality').value=requested;const load=()=>{qs('#results').textContent='Carregando…';google.script.run.withSuccessHandler(rows=>{qs('#results').innerHTML=rows.map(r=>`<div class="rank"><strong>${r.posicao?'#'+r.posicao:'Aguardando amostra mínima'} · ${escapeHtml(r.titulo)}</strong><small>${r.total} avaliações · Média ponderada: ${r.posicao?r.media.toFixed(2).replace('.',','):'—'}</small>${r.medias_criterios?`<small>Critérios — Criatividade ${r.medias_criterios.criatividade.toFixed(2)} · Clareza ${r.medias_criterios.clareza.toFixed(2)} · Relevância ${r.medias_criterios.relevancia.toFixed(2)} · Demonstração ${r.medias_criterios.demonstracao.toFixed(2)}</small>`:''}<small>Atualizado em ${new Date(r.atualizado_em).toLocaleString('pt-BR')}</small></div>`).join('');}).withFailureHandler(e=>qs('#results').textContent=e.message).getRankingForUi(qs('#modality').value);};qs('#modality').addEventListener('change',load);load();}function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}</script>
