@@ -4,21 +4,28 @@
 <body>
 <main>
   <a href="https://anaclaracunhasanthos-gif.github.io/aula12.11/" target="_top" rel="noopener noreferrer">← Voltar ao catálogo</a>
-  <p class="eyebrow">UNIVERSO IF AVALIA</p>
-  <h1>Avaliar projeto</h1>
-  <div id="project" class="panel" data-id="<?= projectId ?>" role="status">Carregando projeto…</div>
+  <header class="vote-header">
+    <p class="eyebrow">IFMA · UNIVERSO IF AVALIA</p>
+    <h1>Avaliação de projetos</h1>
+    <p>Responda às quatro perguntas objetivas e revise suas notas antes de confirmar.</p>
+  </header>
+  <section id="project" class="project-summary" data-id="<?= projectId ?>" aria-label="Projeto selecionado" aria-live="polite">
+    <span class="project-eyebrow">PROJETO SELECIONADO</span>
+    <h2 id="project-name">Carregando projeto…</h2>
+    <p id="project-info"></p>
+  </section>
   <form id="vote" class="panel" novalidate>
     <div id="step-progress" class="step-progress" aria-live="polite">
-      <div class="progress-heading"><strong id="step-label">Etapa 1 de 4</strong><span id="progress-percent">25%</span></div>
+      <div class="progress-heading"><strong id="step-label">Etapa 1 de 4</strong><span id="progress-percent">Pergunta 1</span></div>
       <div class="progress-track" role="progressbar" aria-label="Progresso da avaliação" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><div id="progress-fill"></div></div>
     </div>
     <fieldset id="step-fieldset" class="step-fieldset"><legend id="criterion-name"></legend><p id="criterion-help" class="muted"></p><div id="criteria" class="step-options"></div></fieldset>
     <div id="review" hidden>
-      <h2>Confira sua avaliação</h2>
+      <h2>Confira suas respostas</h2>
       <p>Revise o projeto e suas notas antes de confirmar. Depois do envio, você não poderá alterar a avaliação.</p>
       <div id="review-project" class="review-project"></div>
       <div id="review-notes"></div>
-      <label for="code">Código de avaliação</label>
+      <div class="code-heading"><h3>Por último, informe seu código</h3><p>O código será solicitado somente depois das perguntas.</p></div><label for="code">Código de avaliação</label>
       <input id="code" name="codigo" autocomplete="off" inputmode="text" spellcheck="false" placeholder="Digite seu código de avaliação">
       <p class="muted">Seu código é individual. Confira antes de confirmar.</p>
     </div>
