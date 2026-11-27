@@ -1,11 +1,16 @@
-name: Prévia do Universo IF Avalia no GitHub Pages
+name: Publicação do Universo IF Avalia no GitHub Pages
 on:
   workflow_dispatch:
   push:
     branches:
-      - feat/universo-if-avalia-mvp
+      - main
     paths:
-      - docs/ACIONAR_PREVIA_PAGES.md
+      - '.github/workflows/pages.yml'
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'vite.config.ts'
 
 permissions:
   contents: read
