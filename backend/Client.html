@@ -1,9 +1,9 @@
 <script>const qs=s=>document.querySelector(s);function bootVote(id){
   const criteria=[
-    {key:'criatividade',name:'Criatividade e inovação',weight:'30%',help:'O projeto apresenta ideias originais ou soluções inovadoras?'},
-    {key:'clareza',name:'Clareza da apresentação',weight:'30%',help:'A apresentação é clara, organizada e fácil de compreender?'},
-    {key:'relevancia',name:'Relevância e impacto',weight:'25%',help:'O projeto apresenta contribuições relevantes e possíveis benefícios?'},
-    {key:'demonstracao',name:'Demonstração e resultados',weight:'15%',help:'A equipe demonstra o trabalho e explica seus resultados?'}
+    {key:'criatividade',name:'Criatividade e inovação',weight:'30%',help:'O projeto demonstra criatividade e inovação?'},
+    {key:'clareza',name:'Clareza da apresentação',weight:'30%',help:'A apresentação do projeto foi clara e fácil de entender?'},
+    {key:'relevancia',name:'Relevância e impacto',weight:'25%',help:'O projeto é relevante e pode causar impacto positivo?'},
+    {key:'demonstracao',name:'Demonstração e resultados',weight:'15%',help:'O projeto apresentou demonstrações e resultados claros?'}
   ];
   const descriptions=['','Muito insuficiente','Insuficiente','Adequado','Muito bom','Excelente'];
   const state={step:0,ratings:{},project:null,sending:false,completed:false,requestId:null};
