@@ -1,1 +1,37 @@
-<!doctype html><html><head><?!= include_('Styles'); ?></head><body><main><a href="https://anaclaracunhasanthos-gif.github.io/aula12.11/" target="_top" rel="noopener noreferrer">← Catálogo</a><p class="eyebrow">UNIVERSO IF AVALIA</p><h1>Avaliar projeto</h1><div id="project" class="panel" data-id="<?= projectId ?>">Carregando projeto…</div><form id="vote" class="panel"><label>Código de avaliação<input id="code" autocomplete="off" required></label><div id="criteria"></div><button>Enviar avaliação</button><p id="message" role="status"></p></form></main><?!= include_('Client'); ?><script>bootVote(document.getElementById("project").dataset.id);</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head><?!= include_('Styles'); ?></head>
+<body>
+<main>
+  <a href="https://anaclaracunhasanthos-gif.github.io/aula12.11/" target="_top" rel="noopener noreferrer">← Voltar ao catálogo</a>
+  <p class="eyebrow">UNIVERSO IF AVALIA</p>
+  <h1>Avaliar projeto</h1>
+  <div id="project" class="panel" data-id="<?= projectId ?>" role="status">Carregando projeto…</div>
+  <form id="vote" class="panel" novalidate>
+    <div id="step-progress" class="step-progress" aria-live="polite">
+      <div class="progress-heading"><strong id="step-label">Etapa 1 de 4</strong><span id="progress-percent">25%</span></div>
+      <div class="progress-track" role="progressbar" aria-label="Progresso da avaliação" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><div id="progress-fill"></div></div>
+    </div>
+    <fieldset id="step-fieldset" class="step-fieldset"><legend id="criterion-name"></legend><p id="criterion-help" class="muted"></p><div id="criteria" class="step-options"></div></fieldset>
+    <div id="review" hidden>
+      <h2>Confira sua avaliação</h2>
+      <p>Revise o projeto e suas notas antes de confirmar. Depois do envio, você não poderá alterar a avaliação.</p>
+      <div id="review-project" class="review-project"></div>
+      <div id="review-notes"></div>
+      <label for="code">Código de avaliação</label>
+      <input id="code" name="codigo" autocomplete="off" inputmode="text" spellcheck="false" placeholder="Digite seu código de avaliação">
+      <p class="muted">Seu código é individual. Confira antes de confirmar.</p>
+    </div>
+    <p id="step-error" class="error" role="alert" hidden></p>
+    <div class="step-actions">
+      <button id="prev-step" type="button" class="button-secondary">Voltar</button>
+      <button id="next-step" type="button">Próximo →</button>
+      <button id="submit-vote" type="submit" hidden>Confirmar avaliação</button>
+    </div>
+    <p id="message" role="status" aria-live="polite"></p>
+  </form>
+</main>
+<?!= include_('Client'); ?>
+<script>bootVote(document.getElementById('project').dataset.id);</script>
+</body>
+</html>
