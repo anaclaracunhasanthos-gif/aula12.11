@@ -13,8 +13,8 @@
   const showError=text=>{error.textContent=text;error.hidden=!text;};
   const refresh=()=>{
     const isReview=state.step===4;
-    field.hidden=isReview;review.hidden=!isReview;
-    progress.hidden=isReview;
+    field.hidden=state.completed||isReview;review.hidden=state.completed||!isReview;
+    progress.hidden=state.completed||isReview;
     prev.hidden=state.step===0||state.completed;
     next.hidden=isReview||state.completed;
     submit.hidden=!isReview||state.completed;
@@ -46,7 +46,7 @@
       const label=document.createElement('label');label.className='rating-choice';
       const input=document.createElement('input');input.type='radio';input.name=c.key;input.value=String(n);
       input.checked=state.ratings[c.key]===n;
-      input.addEventListener('change',()=>{state.ratings[c.key]=n;showError('');refresh();});
+      input.addEventListener('change',()=>{state.ratings[c.key]=n;showError('');});
       const digit=document.createElement('strong');digit.textContent=String(n);
       const description=document.createElement('span');description.textContent=descriptions[n];
       label.append(input,digit,description);container.append(label);
