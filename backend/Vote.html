@@ -1,1 +1,35 @@
-<!doctype html><html><head><?!= include_('Styles'); ?></head><body><main><a href="https://anaclaracunhasanthos-gif.github.io/aula12.11/" target="_top" rel="noopener noreferrer">← Catálogo</a><p class="eyebrow">UNIVERSO IF AVALIA</p><h1>Avaliar projeto</h1><div id="project" class="panel" data-id="<?= projectId ?>">Carregando projeto…</div><form id="vote" class="panel"><label>Código de avaliação<input id="code" autocomplete="off" required></label><div id="criteria"></div><button>Enviar avaliação</button><p id="message" role="status"></p></form></main><?!= include_('Client'); ?><script>bootVote(document.getElementById("project").dataset.id);</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head><?!= include_('Styles'); ?></head>
+<body>
+<main>
+  <a href="https://anaclaracunhasanthos-gif.github.io/aula12.11/" target="_top" rel="noopener noreferrer">← Voltar ao catálogo</a>
+  <header class="vote-header">
+    <p class="eyebrow">IFMA · UNIVERSO IF AVALIA</p>
+    <h1>Avaliação de projetos</h1>
+    <p>Responda às quatro perguntas e confirme sua avaliação.</p>
+  </header>
+  <section id="project" class="project-summary" data-id="<?= projectId ?>" aria-label="Projeto selecionado" aria-live="polite">
+    <span class="project-eyebrow">PROJETO SELECIONADO</span>
+    <h2 id="project-name">Carregando projeto…</h2>
+    <p id="project-info"></p>
+  </section>
+  <form id="vote" class="panel" novalidate>
+    <h2 class="questions-title">Responda às perguntas</h2>
+    <p class="muted">Selecione uma nota de 1 a 5 para cada pergunta.</p>
+    <div id="criteria"></div>
+    <section class="code-section">
+      <h2>Código de avaliação</h2>
+      <label for="code">Informe seu código para confirmar</label>
+      <input id="code" name="codigo" autocomplete="off" inputmode="text" spellcheck="false" placeholder="Digite seu código de avaliação" required>
+      <p class="muted">Confira suas respostas e o projeto antes de enviar. O código só pode avaliar este projeto uma vez.</p>
+    </section>
+    <p id="form-error" class="error" role="alert" hidden></p>
+    <button id="submit-vote" type="submit" disabled>Confirmar avaliação</button>
+    <p id="message" role="status" aria-live="polite"></p>
+  </form>
+</main>
+<?!= include_('Client'); ?>
+<script>bootVote(document.getElementById('project').dataset.id);</script>
+</body>
+</html>

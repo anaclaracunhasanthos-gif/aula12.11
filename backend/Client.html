@@ -1,1 +1,80 @@
-<script>const qs=s=>document.querySelector(s);function bootVote(id){google.script.run.withSuccessHandler(p=>{qs('#project').textContent=p.titulo+' · '+p.modalidade;}).withFailureHandler(e=>qs('#project').textContent=e.message).getProjectForUi(id);const labels=[['criatividade','Criatividade e inovação','30%'],['clareza','Clareza da apresentação','30%'],['relevancia','Relevância e impacto','25%'],['demonstracao','Demonstração e resultados','15%']];qs('#criteria').innerHTML=labels.map(([k,l,w])=>`<div class="criterion"><strong>${l} (${w})</strong><div class="options">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="${k}" value="${n}" required>${n}</label>`).join('')}</div></div>`).join('');qs('#vote').addEventListener('submit',e=>{e.preventDefault();const notas={};labels.forEach(([k])=>notas[k]=Number(qs(`input[name="${k}"]:checked`)?.value));const codigo=qs('#code').value.trim();const id_requisicao=(window.__pedidoVotoId || (window.__pedidoVotoId=crypto.randomUUID()));qs('#message').textContent='Enviando…';google.script.run.withSuccessHandler(r=>{qs('#message').className='success';qs('#message').textContent=`Avaliação recebida. Recibo: ${r.id_requisicao} · Nota: ${r.nota.toFixed(2)}`;window.__pedidoVotoId=null;qs('#vote').reset();}).withFailureHandler(err=>{qs('#message').className='error';qs('#message').textContent=err.message;}).submitVote({codigo,id_projeto:id,notas,id_requisicao});});}function bootRanking(){const requested=new URLSearchParams(window.location.search).get('modalidade');if(['Mostra Nacional','Mostra de Extensão'].includes(requested))qs('#modality').value=requested;const load=()=>{qs('#results').textContent='Carregando…';google.script.run.withSuccessHandler(rows=>{qs('#results').innerHTML=rows.map(r=>`<div class="rank"><strong>${r.posicao?'#'+r.posicao:'Aguardando amostra mínima'} · ${escapeHtml(r.titulo)}</strong><small>${r.total} avaliações · Média ponderada: ${r.posicao?r.media.toFixed(2).replace('.',','):'—'}</small>${r.medias_criterios?`<small>Critérios — Criatividade ${r.medias_criterios.criatividade.toFixed(2)} · Clareza ${r.medias_criterios.clareza.toFixed(2)} · Relevância ${r.medias_criterios.relevancia.toFixed(2)} · Demonstração ${r.medias_criterios.demonstracao.toFixed(2)}</small>`:''}<small>Atualizado em ${new Date(r.atualizado_em).toLocaleString('pt-BR')}</small></div>`).join('');}).withFailureHandler(e=>qs('#results').textContent=e.message).getRankingForUi(qs('#modality').value);};qs('#modality').addEventListener('change',load);load();}function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}</script>
+<script>const qs=s=>document.querySelector(s);function bootVote(id){
+  const criteria=[
+    {key:'criatividade',name:'Criatividade e inovação',question:'O projeto demonstra criatividade e inovação?'},
+    {key:'clareza',name:'Clareza da apresentação',question:'A apresentação do projeto foi clara e de fácil compreensão?'},
+    {key:'relevancia',name:'Relevância e impacto',question:'O projeto é relevante e pode causar impacto positivo?'},
+    {key:'demonstracao',name:'Demonstrações e resultados',question:'O projeto apresentou demonstrações e resultados claros?'}
+  ];
+  const descriptions=['','Muito insuficiente','Insuficiente','Adequado','Muito bom','Excelente'];
+  const state={project:null,sending:false,completed:false,requestId:null};
+  const el=s=>document.querySelector(s);
+  const container=el('#criteria'),submit=el('#submit-vote'),code=el('#code'),message=el('#message'),error=el('#form-error');
+  const showError=text=>{error.textContent=text;error.hidden=!text;};
+  const selectedRatings=()=>{
+    const notas={};
+    criteria.forEach(c=>{
+      const chosen=container.querySelector('input[name="'+c.key+'"]:checked');
+      if(chosen)notas[c.key]=Number(chosen.value);
+    });
+    return notas;
+  };
+  const update=()=>{
+    const notas=selectedRatings();
+    const complete=criteria.every(c=>Number.isInteger(notas[c.key])&&notas[c.key]>=1&&notas[c.key]<=5);
+    submit.disabled=!complete||!state.project||state.sending||state.completed||!code.value.trim();
+  };
+  criteria.forEach((c,i)=>{
+    const fieldset=document.createElement('fieldset');fieldset.className='question-block';
+    const legend=document.createElement('legend');legend.textContent=(i+1)+'. '+c.name;
+    const prompt=document.createElement('p');prompt.textContent=c.question;prompt.className='question-text';
+    const options=document.createElement('div');options.className='step-options';
+    for(let n=1;n<=5;n++){
+      const label=document.createElement('label');label.className='rating-choice';
+      const radio=document.createElement('input');radio.type='radio';radio.name=c.key;radio.value=String(n);
+      radio.addEventListener('change',()=>{showError('');update();});
+      const numeral=document.createElement('strong');numeral.textContent=String(n);
+      const description=document.createElement('span');description.textContent=descriptions[n];
+      label.append(radio,numeral,description);options.append(label);
+    }
+    fieldset.append(legend,prompt,options);container.append(fieldset);
+  });
+  code.addEventListener('input',()=>{showError('');update();});
+  google.script.run.withSuccessHandler(p=>{
+    if(!p||String(p.id)!==String(id)){
+      el('#project-name').textContent='Não foi possível confirmar o projeto.';
+      showError('Volte ao catálogo e escolha um projeto válido.');return;
+    }
+    state.project=p;
+    el('#project-name').textContent=p.titulo;
+    el('#project-info').textContent=p.modalidade+' · '+p.id+(p.area?' · '+p.area:'');
+    update();
+  }).withFailureHandler(e=>{
+    el('#project-name').textContent='Erro ao carregar projeto.';
+    showError(e.message||'Não foi possível carregar este projeto.');
+  }).getProjectForUi(id);
+  el('#vote').addEventListener('submit',e=>{
+    e.preventDefault();
+    if(state.sending||state.completed||!state.project)return;
+    const notas=selectedRatings();
+    if(criteria.some(c=>!Number.isInteger(notas[c.key])||notas[c.key]<1||notas[c.key]>5)){
+      showError('Responda às quatro perguntas antes de enviar.');return;
+    }
+    const codigo=code.value.trim();
+    if(!codigo){showError('Informe seu código de avaliação.');code.focus();return;}
+    state.sending=true;showError('');submit.textContent='Enviando…';update();message.className='';message.textContent='Enviando avaliação…';
+    if(!state.requestId)state.requestId=window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2);
+    google.script.run.withSuccessHandler(r=>{
+      state.sending=false;state.completed=true;state.requestId=null;
+      message.className='success';message.textContent='Avaliação recebida. Recibo: '+r.id_requisicao+' · Nota: '+Number(r.nota).toFixed(2).replace('.',',');
+      code.value='';
+      container.querySelectorAll('input[type="radio"]').forEach(input=>input.disabled=true);
+      code.disabled=true;submit.textContent='Avaliação registrada';update();
+    }).withFailureHandler(err=>{
+      state.sending=false;submit.textContent='Confirmar avaliação';update();
+      message.className='error';
+      const detalhe=String(err&&err.message||'');
+      message.textContent=detalhe.includes('já avaliou este projeto')?'Este código já foi utilizado para avaliar este projeto. Não é possível enviar uma segunda avaliação com o mesmo código.':(detalhe||'Não foi possível confirmar. Verifique sua conexão antes de tentar novamente.');
+    }).submitVote({codigo,id_projeto:id,notas,id_requisicao:state.requestId});
+  });
+  update();
+}function bootRanking(){const requested=new URLSearchParams(window.location.search).get('modalidade');if(['Mostra Nacional','Mostra de Extensão'].includes(requested))qs('#modality').value=requested;const load=()=>{qs('#results').textContent='Carregando…';google.script.run.withSuccessHandler(rows=>{qs('#results').innerHTML=rows.map(r=>`<div class="rank"><strong>${r.posicao?'#'+r.posicao:'Aguardando amostra mínima'} · ${escapeHtml(r.titulo)}</strong><small>${r.total} avaliações · Média ponderada: ${r.posicao?r.media.toFixed(2).replace('.',','):'—'}</small>${r.medias_criterios?`<small>Critérios — Criatividade ${r.medias_criterios.criatividade.toFixed(2)} · Clareza ${r.medias_criterios.clareza.toFixed(2)} · Relevância ${r.medias_criterios.relevancia.toFixed(2)} · Demonstração ${r.medias_criterios.demonstracao.toFixed(2)}</small>`:''}<small>Atualizado em ${new Date(r.atualizado_em).toLocaleString('pt-BR')}</small></div>`).join('');}).withFailureHandler(e=>qs('#results').textContent=e.message).getRankingForUi(qs('#modality').value);};qs('#modality').addEventListener('change',load);load();}function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}</script>
