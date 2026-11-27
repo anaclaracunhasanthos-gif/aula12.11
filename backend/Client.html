@@ -1,101 +1,80 @@
 <script>const qs=s=>document.querySelector(s);function bootVote(id){
   const criteria=[
-    {key:'criatividade',name:'Criatividade e inovação',help:'O projeto demonstra criatividade e inovação?'},
-    {key:'clareza',name:'Clareza da apresentação',help:'A apresentação do projeto foi clara e de fácil compreensão?'},
-    {key:'relevancia',name:'Relevância e impacto',help:'O projeto é relevante e pode causar impacto positivo?'},
-    {key:'demonstracao',name:'Demonstração e resultados',help:'O projeto apresentou demonstrações e resultados claros?'}
+    {key:'criatividade',name:'Criatividade e inovação',question:'O projeto demonstra criatividade e inovação?'},
+    {key:'clareza',name:'Clareza da apresentação',question:'A apresentação do projeto foi clara e de fácil compreensão?'},
+    {key:'relevancia',name:'Relevância e impacto',question:'O projeto é relevante e pode causar impacto positivo?'},
+    {key:'demonstracao',name:'Demonstrações e resultados',question:'O projeto apresentou demonstrações e resultados claros?'}
   ];
   const descriptions=['','Muito insuficiente','Insuficiente','Adequado','Muito bom','Excelente'];
-  const state={step:0,ratings:{},project:null,sending:false,completed:false,requestId:null};
+  const state={project:null,sending:false,completed:false,requestId:null};
   const el=s=>document.querySelector(s);
-  const progress=el('#step-progress'),field=el('#step-fieldset'),review=el('#review');
-  const prev=el('#prev-step'),next=el('#next-step'),submit=el('#submit-vote'),code=el('#code'),message=el('#message'),error=el('#step-error');
+  const container=el('#criteria'),submit=el('#submit-vote'),code=el('#code'),message=el('#message'),error=el('#form-error');
   const showError=text=>{error.textContent=text;error.hidden=!text;};
-  const refresh=()=>{
-    const isReview=state.step===4;
-    field.hidden=state.completed||isReview;review.hidden=state.completed||!isReview;
-    progress.hidden=state.completed||isReview;
-    prev.hidden=state.step===0||state.completed;
-    next.hidden=isReview||state.completed;
-    submit.hidden=!isReview||state.completed;
-    next.disabled=state.sending||!state.project;
-    prev.disabled=state.sending;
-    submit.disabled=state.sending||!state.project;
-    if(state.completed)return;
-    if(isReview){
-      el('#review-project').textContent=state.project.titulo+' · '+state.project.modalidade+' · '+state.project.id;
-      el('#review-notes').replaceChildren();
-      criteria.forEach(c=>{
-        const row=document.createElement('div');row.className='review-row';
-        const title=document.createElement('span');title.textContent=c.name;
-        const note=document.createElement('strong');note.textContent=state.ratings[c.key]+' / 5';
-        row.append(title,note);el('#review-notes').append(row);
-      });
-      code.focus();
-      return;
-    }
-    const c=criteria[state.step];
-    el('#step-label').textContent='Etapa '+(state.step+1)+' de 4';
-    el('#progress-percent').textContent='Pergunta '+(state.step+1);
-    el('.progress-track').setAttribute('aria-valuenow',String((state.step+1)*25));
-    el('#progress-fill').style.width=((state.step+1)*25)+'%';
-    el('#criterion-name').textContent=c.name;
-    el('#criterion-help').textContent=c.help;
-    const container=el('#criteria');container.replaceChildren();
+  const selectedRatings=()=>{
+    const notas={};
+    criteria.forEach(c=>{
+      const chosen=container.querySelector('input[name="'+c.key+'"]:checked');
+      if(chosen)notas[c.key]=Number(chosen.value);
+    });
+    return notas;
+  };
+  const update=()=>{
+    const notas=selectedRatings();
+    const complete=criteria.every(c=>Number.isInteger(notas[c.key])&&notas[c.key]>=1&&notas[c.key]<=5);
+    submit.disabled=!complete||!state.project||state.sending||state.completed||!code.value.trim();
+  };
+  criteria.forEach((c,i)=>{
+    const fieldset=document.createElement('fieldset');fieldset.className='question-block';
+    const legend=document.createElement('legend');legend.textContent=(i+1)+'. '+c.name;
+    const prompt=document.createElement('p');prompt.textContent=c.question;prompt.className='question-text';
+    const options=document.createElement('div');options.className='step-options';
     for(let n=1;n<=5;n++){
       const label=document.createElement('label');label.className='rating-choice';
-      const input=document.createElement('input');input.type='radio';input.name=c.key;input.value=String(n);
-      input.checked=state.ratings[c.key]===n;
-      input.addEventListener('change',()=>{state.ratings[c.key]=n;showError('');});
-      const digit=document.createElement('strong');digit.textContent=String(n);
+      const radio=document.createElement('input');radio.type='radio';radio.name=c.key;radio.value=String(n);
+      radio.addEventListener('change',()=>{showError('');update();});
+      const numeral=document.createElement('strong');numeral.textContent=String(n);
       const description=document.createElement('span');description.textContent=descriptions[n];
-      label.append(input,digit,description);container.append(label);
+      label.append(radio,numeral,description);options.append(label);
     }
-    next.textContent=state.step===3?'Revisar notas →':'Próximo →';
-  };
+    fieldset.append(legend,prompt,options);container.append(fieldset);
+  });
+  code.addEventListener('input',()=>{showError('');update();});
   google.script.run.withSuccessHandler(p=>{
-    if(!p||!p.id||String(p.id)!==String(id)){
-      el('#project-name').textContent='Não foi possível confirmar o projeto selecionado.';
-      showError('Volte ao catálogo e selecione um projeto válido.');
-      return;
+    if(!p||String(p.id)!==String(id)){
+      el('#project-name').textContent='Não foi possível confirmar o projeto.';
+      showError('Volte ao catálogo e escolha um projeto válido.');return;
     }
     state.project=p;
     el('#project-name').textContent=p.titulo;
     el('#project-info').textContent=p.modalidade+' · '+p.id+(p.area?' · '+p.area:'');
-    refresh();
+    update();
   }).withFailureHandler(e=>{
     el('#project-name').textContent='Erro ao carregar projeto.';
     showError(e.message||'Não foi possível carregar este projeto.');
   }).getProjectForUi(id);
-  next.addEventListener('click',()=>{
-    const c=criteria[state.step];
-    if(!Number.isInteger(state.ratings[c.key])||state.ratings[c.key]<1||state.ratings[c.key]>5){
-      showError('Selecione uma nota de 1 a 5 para continuar.');return;
-    }
-    showError('');state.step++;refresh();
-  });
-  prev.addEventListener('click',()=>{if(state.step>0&&!state.sending){state.step--;showError('');refresh();}});
   el('#vote').addEventListener('submit',e=>{
     e.preventDefault();
-    if(state.sending||state.completed||state.step!==4||!state.project)return;
-    if(criteria.some(c=>!Number.isInteger(state.ratings[c.key])||state.ratings[c.key]<1||state.ratings[c.key]>5)){
-      showError('Todas as quatro notas precisam ser preenchidas.');state.step=0;refresh();return;
+    if(state.sending||state.completed||!state.project)return;
+    const notas=selectedRatings();
+    if(criteria.some(c=>!Number.isInteger(notas[c.key])||notas[c.key]<1||notas[c.key]>5)){
+      showError('Responda às quatro perguntas antes de enviar.');return;
     }
     const codigo=code.value.trim();
-    if(!codigo){showError('Informe seu código de avaliação antes de confirmar.');code.focus();return;}
-    showError('');state.sending=true;submit.textContent='Enviando…';refresh();message.className='';message.textContent='Enviando avaliação…';
+    if(!codigo){showError('Informe seu código de avaliação.');code.focus();return;}
+    state.sending=true;showError('');submit.textContent='Enviando…';update();message.className='';message.textContent='Enviando avaliação…';
     if(!state.requestId)state.requestId=window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2);
-    const notas={};criteria.forEach(c=>notas[c.key]=state.ratings[c.key]);
     google.script.run.withSuccessHandler(r=>{
       state.sending=false;state.completed=true;state.requestId=null;
       message.className='success';message.textContent='Avaliação recebida. Recibo: '+r.id_requisicao+' · Nota: '+Number(r.nota).toFixed(2).replace('.',',');
-      code.value='';review.hidden=true;progress.hidden=true;field.hidden=true;refresh();
+      code.value='';
+      container.querySelectorAll('input[type="radio"]').forEach(input=>input.disabled=true);
+      code.disabled=true;submit.textContent='Avaliação registrada';update();
     }).withFailureHandler(err=>{
-      state.sending=false;submit.textContent='Confirmar avaliação';refresh();
+      state.sending=false;submit.textContent='Confirmar avaliação';update();
       message.className='error';
       const detalhe=String(err&&err.message||'');
       message.textContent=detalhe.includes('já avaliou este projeto')?'Este código já foi utilizado para avaliar este projeto. Não é possível enviar uma segunda avaliação com o mesmo código.':(detalhe||'Não foi possível confirmar. Verifique sua conexão antes de tentar novamente.');
     }).submitVote({codigo,id_projeto:id,notas,id_requisicao:state.requestId});
   });
-  refresh();
+  update();
 }function bootRanking(){const requested=new URLSearchParams(window.location.search).get('modalidade');if(['Mostra Nacional','Mostra de Extensão'].includes(requested))qs('#modality').value=requested;const load=()=>{qs('#results').textContent='Carregando…';google.script.run.withSuccessHandler(rows=>{qs('#results').innerHTML=rows.map(r=>`<div class="rank"><strong>${r.posicao?'#'+r.posicao:'Aguardando amostra mínima'} · ${escapeHtml(r.titulo)}</strong><small>${r.total} avaliações · Média ponderada: ${r.posicao?r.media.toFixed(2).replace('.',','):'—'}</small>${r.medias_criterios?`<small>Critérios — Criatividade ${r.medias_criterios.criatividade.toFixed(2)} · Clareza ${r.medias_criterios.clareza.toFixed(2)} · Relevância ${r.medias_criterios.relevancia.toFixed(2)} · Demonstração ${r.medias_criterios.demonstracao.toFixed(2)}</small>`:''}<small>Atualizado em ${new Date(r.atualizado_em).toLocaleString('pt-BR')}</small></div>`).join('');}).withFailureHandler(e=>qs('#results').textContent=e.message).getRankingForUi(qs('#modality').value);};qs('#modality').addEventListener('change',load);load();}function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}</script>
